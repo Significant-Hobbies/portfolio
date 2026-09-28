@@ -18,6 +18,8 @@ interface Props {
 }
 
 const { title, description, image, type, hideFooter = false } = Astro.props;
+const appHealthBrowserKey = import.meta.env.PUBLIC_APP_HEALTH_BROWSER_KEY;
+const appHealthProjectId = import.meta.env.PUBLIC_APP_HEALTH_PROJECT_ID;
 ---
 
 <!doctype html>
@@ -225,6 +227,17 @@ const { title, description, image, type, hideFooter = false } = Astro.props;
       emitPageView();
     </script>
     <script is:inline src="/app-health-log.js" defer></script>
+    {appHealthBrowserKey && appHealthProjectId && (
+      <script
+        is:inline
+        defer
+        src="https://health.sassmaker.com/tracker.js"
+        data-key={appHealthBrowserKey}
+        data-project={appHealthProjectId}
+        data-identity="session"
+        data-endpoint="https://ingest.sassmaker.com/v1/browser"
+      ></script>
+    )}
   </head>
   <body class="min-h-screen">
     <a

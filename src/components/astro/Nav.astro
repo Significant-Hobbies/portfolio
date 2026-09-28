@@ -44,6 +44,7 @@ import { navLinks, site } from '@/data/site';
       {navLinks.map((link) => (
           <a
             href={link.href}
+            data-app-health-event={link.label === 'Projects' ? 'projects_opened' : undefined}
             class="link-underline text-sm text-muted transition-colors hover:text-fg"
           >
             {link.label}
