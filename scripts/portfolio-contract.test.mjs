@@ -94,10 +94,15 @@ test('selected-work intro counts the rendered entries and covers personal work',
   const home = await readHomepageSource();
   const files = await readdir(`${ROOT}/src/content/work`);
   const entries = await Promise.all(
-    files.filter((file) => file.endsWith('.mdx')).map(async (file) => {
-      const source = await readFile(`${ROOT}/src/content/work/${file}`, 'utf8');
-      return source.split('---')[1];
-    })
+    files
+      .filter((file) => file.endsWith('.mdx'))
+      .map(async (file) => {
+        const source = await readFile(
+          `${ROOT}/src/content/work/${file}`,
+          'utf8'
+        );
+        return source.split('---')[1];
+      })
   );
   const featured = entries.filter((entry) => /^featured: true$/m.test(entry));
   assert.ok(featured.length > 0, 'selection contains featured case studies');
@@ -110,7 +115,10 @@ test('selected-work intro counts the rendered entries and covers personal work',
   const intro = home.match(
     /kicker="\/\/ selected work"[\s\S]*?intro=\{(`[^`]+`)\}/
   )?.[1];
-  assert.ok(intro, 'intro must derive its count from the rendered work collection');
+  assert.ok(
+    intro,
+    'intro must derive its count from the rendered work collection'
+  );
   for (const count of [0, 1, featured.length, featured.length + 1]) {
     const copy = runInNewContext(intro, { work: Array(count) });
     assert.equal(
@@ -126,7 +134,10 @@ test('local contact footer speaks for one person and preserves the pilot terms',
     'utf8'
   );
   const copy = footer.replace(/\s+/g, ' ');
-  assert.match(copy, /I'm available for a \$500 USD feature verification pilot/);
+  assert.match(
+    copy,
+    /I'm available for a \$500 USD feature verification pilot/
+  );
   assert.match(copy, /I am the contact for scope and payment/);
   assert.match(copy, /\$250 to start, \$250 on delivery; three working days/);
   assert.match(copy, /Fixes are separately scoped\./);
