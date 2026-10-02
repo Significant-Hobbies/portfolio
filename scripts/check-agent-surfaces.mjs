@@ -34,6 +34,19 @@ for (const route of routes) {
 
   const markdownPath = route === '/' ? 'index.md' : `${route.slice(1)}.md`;
   await access(path.join(DIST, markdownPath));
+
+  const htmlPath = route === '/' ? 'index.html' : `${route.slice(1)}.html`;
+  const html = await readFile(path.join(DIST, htmlPath), 'utf8');
+  // Public contact links must remain usable without Cloudflare's decode JS.
+  const unprotectedHtml = html.replace(
+    /<!--email_off-->[\s\S]*?<!--\/email_off-->/g,
+    ''
+  );
+  assert.equal(
+    /<a\b[^>]*\bhref=["']mailto:/i.test(unprotectedHtml),
+    false,
+    `${route} has an email link without Cloudflare email_off markers`
+  );
 }
 
 const fullCorpus = await readFile(path.join(DIST, 'llms-full.txt'), 'utf8');

@@ -57,7 +57,11 @@ import { site } from '@/data/site';
       </ul>
 
       <h2>Contact</h2>
-      <p>Questions: <a href={`mailto:${site.email}`}>{site.email}</a></p>
+      <p>
+        Questions: <!--email_off--><a href={`mailto:${site.email}`}
+          >{site.email}</a
+        ><!--/email_off-->
+      </p>
     </div>
   </article>
 </BaseLayout>
