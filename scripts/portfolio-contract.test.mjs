@@ -120,7 +120,7 @@ test('selected-work intro counts the rendered entries and covers personal work',
     'intro must derive its count from the rendered work collection'
   );
   for (const count of [0, 1, featured.length, featured.length + 1]) {
-    const copy = runInNewContext(intro, { work: Array(count) });
+    const copy = runInNewContext(intro, { work: new Array(count) });
     assert.equal(
       copy,
       `${count} ${count === 1 ? 'project' : 'projects'} from my professional and personal work — what the problem was, what I built, and what changed.`
