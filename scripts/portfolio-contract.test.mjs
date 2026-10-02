@@ -1,9 +1,10 @@
 // Public portfolio contract: promotion follows the verified public projection.
 
 import assert from 'node:assert/strict';
-import { readFile } from 'node:fs/promises';
+import { readFile, readdir } from 'node:fs/promises';
 import test from 'node:test';
 import { fileURLToPath } from 'node:url';
+import { runInNewContext } from 'node:vm';
 
 const ROOT = fileURLToPath(new URL('..', import.meta.url));
 
@@ -86,6 +87,74 @@ test('homepage declares one meaningful CTA in the hero', async () => {
     home,
     /href="#focus"/,
     'hero CTA must anchor to the focus section'
+  );
+});
+
+test('selected-work intro counts the rendered entries and covers personal work', async () => {
+  const home = await readHomepageSource();
+  const files = await readdir(`${ROOT}/src/content/work`);
+  const entries = await Promise.all(
+    files
+      .filter((file) => file.endsWith('.mdx'))
+      .map(async (file) => {
+        const source = await readFile(
+          `${ROOT}/src/content/work/${file}`,
+          'utf8'
+        );
+        return source.split('---')[1];
+      })
+  );
+  const featured = entries.filter((entry) => /^featured: true$/m.test(entry));
+  assert.ok(featured.length > 0, 'selection contains featured case studies');
+  assert.ok(featured.some((entry) => /^role: Personal/m.test(entry)));
+  assert.match(
+    home,
+    /getCollection\('work'\)[\s\S]*?\.filter\(\(w\) => w\.data\.featured\)/
+  );
+  assert.match(home, /work\.map\(\(entry, i\) =>/);
+  const intro = home.match(
+    /kicker="\/\/ selected work"[\s\S]*?intro=\{(`[^`]+`)\}/
+  )?.[1];
+  assert.ok(
+    intro,
+    'intro must derive its count from the rendered work collection'
+  );
+  for (const count of [0, 1, featured.length, featured.length + 1]) {
+    const copy = runInNewContext(intro, { work: new Array(count) });
+    assert.equal(
+      copy,
+      `${count} ${count === 1 ? 'project' : 'projects'} from my professional and personal work — what the problem was, what I built, and what changed.`
+    );
+  }
+});
+
+test('local contact footer speaks for one person and preserves the pilot terms', async () => {
+  const footer = await readFile(
+    `${ROOT}/src/components/astro/Footer.astro`,
+    'utf8'
+  );
+  const copy = footer.replace(/\s+/g, ' ');
+  assert.match(
+    copy,
+    /I'm available for a \$500 USD feature verification pilot/
+  );
+  assert.match(copy, /I am the contact for scope and payment/);
+  assert.match(copy, /\$250 to start, \$250 on delivery; three working days/);
+  assert.match(copy, /Fixes are separately scoped\./);
+  assert.doesNotMatch(copy, /\b(?:our team|contact us|we are|we're)\b/i);
+});
+
+test('hosted AI footer uses supported label and prompt attributes for a personal portfolio', async () => {
+  const layout = await readFile(`${ROOT}/src/layouts/BaseLayout.astro`, 'utf8');
+  const script = layout.match(
+    /<script\s[^>]*src="https:\/\/sassmaker\.com\/ai-chat-footer\.js"[^>]*>/
+  )?.[0];
+  assert.ok(script);
+  assert.match(script, /data-name="Sarthak Agrawal"/);
+  assert.match(script, /data-label="Explore my work with AI"/);
+  assert.match(
+    script,
+    /data-prompt="Summarize \{companyName\}'s engineering work and projects from this personal portfolio \(\{companyUrl\}\)\. Keep it concise\."/
   );
 });
 
