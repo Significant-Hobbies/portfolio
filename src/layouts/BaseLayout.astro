@@ -220,7 +220,7 @@ const appHealthProjectId = import.meta.env.PUBLIC_APP_HEALTH_PROJECT_ID;
       is:inline
       async
       src="https://www.clarity.ms/tag/y6bw8jogxg"
-      onload="window.clarity('set', 'project_id', 'sarthakagrawal-personal')"
+      onload="if (typeof window.clarity === 'function') window.clarity('set', 'project_id', 'sarthakagrawal-personal')"
     ></script>
     <script>
       import { emitPageView } from '../lib/product-analytics';
