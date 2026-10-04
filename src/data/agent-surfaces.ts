@@ -271,6 +271,7 @@ function renderResume(track: ResumeTrack) {
       `### ${item.role} — ${item.company}`,
       '',
       `${item.period} · ${item.note}`,
+      ...(item.context ? ['', item.context] : []),
       '',
       ...item.bullets.map((bullet) => `- ${bullet}`),
       '',

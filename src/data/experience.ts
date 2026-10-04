@@ -22,9 +22,10 @@ export const experience: Experience[] = [
     period: 'Feb 2025 — Present',
     current: true,
     summary:
-      'Backend services and reliability infrastructure for a wealth-management platform — financial planning, durable workflows, and the systems they run on.',
+      'Backend services and reliability infrastructure for a wealth-management platform serving the UAE and Saudi Arabia — financial planning, durable workflows, and the systems they run on.',
     highlights: [
-      'Built a Financial Planning Service in Go and MySQL, including proprietary logic to compute clients’ financial health scores.',
+      'Built and own the Go financial-planning backend for the UAE and Saudi markets, including its projection, recommendation, and data-import engines.',
+      'Built the retirement and goal projection engine, validated against 68 rolling 30-year S&P 500 periods to within 2% of an independent simulation.',
       'Migrated critical workflows to Temporal, eliminating 90% of unexpected failures and freeing roughly 3 engineering hours every day.',
       'Migrated the web app from MUI to Tailwind and built responsive React components.',
     ],
