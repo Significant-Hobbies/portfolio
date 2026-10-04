@@ -128,19 +128,14 @@ test('selected-work intro counts the rendered entries and covers personal work',
   }
 });
 
-test('local contact footer speaks for one person and preserves the pilot terms', async () => {
+test('local contact footer keeps direct personal contact without the removed pilot offer', async () => {
   const footer = await readFile(
     `${ROOT}/src/components/astro/Footer.astro`,
     'utf8'
   );
   const copy = footer.replace(/\s+/g, ' ');
-  assert.match(
-    copy,
-    /I'm available for a \$500 USD feature verification pilot/
-  );
-  assert.match(copy, /I am the contact for scope and payment/);
-  assert.match(copy, /\$250 to start, \$250 on delivery; three working days/);
-  assert.match(copy, /Fixes are separately scoped\./);
+  assert.match(copy, /href=\{`mailto:\$\{site\.email\}`\}/);
+  assert.doesNotMatch(copy, /feature verification pilot|\$500|\$250/);
   assert.doesNotMatch(copy, /\b(?:our team|contact us|we are|we're)\b/i);
 });
 
