@@ -1,0 +1,7 @@
+# Precise footer browser snapshot
+
+This product-owned snapshot mirrors the qualified public browser assets from sass-maker/saas-maker, retaining the existing newsletter and feedback API behavior. `manifest.json` records every deployed asset SHA-256, source path and source baseline. The selected footer work was locally qualified as an uncommitted shared candidate; the baseline is attribution, not a claim that the implementation was previously published. The coordinator’s feedback sentence was adapted to “Have a question or an idea? Share it here.”; no service logic changes.
+
+To refresh: qualify the shared source and run its existing `pnpm build:showcase`; copy the four named JavaScript assets from `apps/showcase/dist`, the versioned fonts with OFL/provenance, and the original personal art. Regenerate these file hashes, run this repository’s contract/quality checks, and inspect the built footer in light/dark and compact/wide contexts before release. Do not copy the private catalog or other projects’ artwork.
+
+Native portfolio fonts remain authoritative. The optional mirrored fonts are exact OFL assets, with individual licenses/provenance. Shared source is MIT (LICENSE.txt); bundled third-party runtime notices remain at the end of feedback-launcher.js. The original personal illustration is retained unmodified. AI handoffs open the selected external assistant with an editable question; no simulated AI response. Capture uses the existing public project configuration and requires explicit consent.

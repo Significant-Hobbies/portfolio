@@ -85,11 +85,24 @@ const appHealthProjectId = import.meta.env.PUBLIC_APP_HEALTH_PROJECT_ID;
           window.setTimeout(() => root.classList.remove(animationClass), 720);
         };
 
+        const syncFooterTheme = (theme) => {
+          document
+            .querySelectorAll(
+              'fleet-footer-extension, fleet-footer-extension ai-chat-footer, fleet-footer-extension portfolio-project-strip, fleet-footer-extension saas-maker-newsletter-capture'
+            )
+            .forEach((footer) => {
+              if (footer.getAttribute('theme') !== theme) {
+                footer.setAttribute('theme', theme);
+              }
+            });
+        };
+
         const applyTheme = (theme, animate = false) => {
           document.documentElement.dataset.theme = theme;
           document.documentElement.style.colorScheme = theme;
           setThemeColor(theme);
           syncControls(theme);
+          syncFooterTheme(theme);
           if (animate) animateLamp(theme);
         };
 
@@ -211,6 +224,9 @@ const appHealthProjectId = import.meta.env.PUBLIC_APP_HEALTH_PROJECT_ID;
           document.addEventListener('astro:page-load', () =>
             applyTheme(getStoredTheme())
           );
+          document.addEventListener('footer-connect', () => {
+            queueMicrotask(() => syncFooterTheme(getStoredTheme()));
+          });
         }
       })();
     </script>
@@ -256,21 +272,30 @@ const appHealthProjectId = import.meta.env.PUBLIC_APP_HEALTH_PROJECT_ID;
     {!hideFooter && <Footer />}
 
     <CommandPalette client:idle transition:persist />
-    <script
-      is:inline
-      src="https://sassmaker.com/project-strip.js"
-      data-project="sarthakagrawal-personal"
-      crossorigin="anonymous"
-      defer
-    ></script>
-    <script
-      is:inline
-      src="https://sassmaker.com/ai-chat-footer.js"
-      data-name="Sarthak Agrawal"
-      data-label="Explore my work with AI"
-      data-prompt="Summarize {companyName}'s engineering work and projects from this personal portfolio ({companyUrl}). Keep it concise."
-      crossorigin="anonymous"
-      defer
-    ></script>
+    {!hideFooter && (
+      <>
+        <script
+          is:inline
+          data-astro-rerun
+          src="/fleet-footer/project-strip.js"
+          data-project="sarthakagrawal-personal"
+          data-host-only="true"
+          data-layout="studio"
+          defer
+        />
+        <script
+          is:inline
+          data-astro-rerun
+          src="/fleet-footer/ai-chat-footer.js"
+          data-project="sarthakagrawal-personal"
+          data-host-only="true"
+          data-name="Sarthak Agrawal"
+          data-label="Explore my work with AI"
+          data-prompt="Summarize {companyName}'s engineering work and projects from this personal portfolio ({companyUrl}). Keep it concise."
+          data-layout="question"
+          defer
+        />
+      </>
+    )}
   </body>
 </html>

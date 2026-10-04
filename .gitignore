@@ -20,3 +20,6 @@ Thumbs.db
 npm-debug.log*
 .vscode/
 .idea/
+
+# Private retained design and release evidence
+.fleet-local/

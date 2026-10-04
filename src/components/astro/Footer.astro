@@ -1,5 +1,5 @@
 ---
-import { site } from '@/data/site';
+import { navLinks, site } from '@/data/site';
 import { socials } from '@/data/socials';
 
 const year = new Date().getFullYear();
@@ -7,68 +7,172 @@ const profiles = socials.filter((social) => social.label !== 'Email');
 const repoUrl = 'https://github.com/sarthakagrawal927/portfolio';
 ---
 
-<footer id="contact" class="scroll-mt-20 border-t border-line">
-  <div class="mx-auto max-w-6xl px-5 py-10 sm:px-8 sm:py-12">
-    <div
-      class="flex flex-col gap-6 sm:flex-row sm:items-end sm:justify-between"
-    >
-      <div>
-        <p class="kicker">// contact</p>
-        <p class="mt-2 max-w-lg text-sm text-muted">
-          I'm available for a $500 USD feature verification pilot: AI agents
-          inspect one agreed TypeScript/Node workflow, run reproducible checks,
-          and write the report. I am the contact for scope and payment. $250 to
-          start, $250 on delivery; three working days after scope and runnable
-          setup are agreed. Fixes are separately scoped.
-        </p>
-        <!--email_off-->
-        <a
-          href={`mailto:${site.email}?subject=${encodeURIComponent('$500 feature verification pilot')}`}
-          class="link-underline mt-2 inline-block font-mono text-sm text-fg transition-colors hover:text-accent sm:text-lg"
-        >
-          {site.email}
-        </a>
-        <!--/email_off-->
-      </div>
+<footer id="contact" class="precise-footer scroll-mt-20">
+  <fleet-footer-extension
+    data-fleet-footer-project="sarthakagrawal-personal"
+    product-name={site.name}
+    signature-name={site.name}
+    fonts="false"
+    theme="dark"
+    surface="landing"
+    art-src="/fleet-footer/art/sarthakagrawal-personal.webp"
+    art-width="2171"
+    art-height="724"
+    art-position="50% 50%"
+    art-alt="An original engineering workbench illustration for Sarthak Agrawal’s personal portfolio."
+    art-credit="Original illustration for Sarthak Agrawal"
+  >
+    <div slot="cta" class="precise-contact" data-fleet-footer-cta>
+      <p class="precise-label">Contact</p>
+      <p class="precise-pilot">
+        I'm available for a $500 USD feature verification pilot: AI agents
+        inspect one agreed TypeScript/Node workflow, run reproducible checks,
+        and write the report. I am the contact for scope and payment. $250 to
+        start, $250 on delivery; three working days after scope and runnable
+        setup are agreed. Fixes are separately scoped.
+      </p>
+      <!--email_off-->
+      <a
+        href={`mailto:${site.email}?subject=${encodeURIComponent('$500 feature verification pilot')}`}
+        class="precise-email"
+      >
+        {site.email}
+      </a>
+      <!--/email_off-->
+    </div>
 
-      <nav class="flex flex-wrap gap-x-5 gap-y-2" aria-label="Social profiles">
-        {profiles.map((social) => (
-            <a
-              href={social.href}
-              target="_blank"
-              rel="noopener noreferrer"
-              class="text-sm text-muted transition-colors hover:text-fg"
-            >
+    <div
+      slot="navigation"
+      class="precise-navigation"
+      data-fleet-footer-navigation
+    >
+      <nav class="precise-groups" aria-label="Portfolio resources">
+        <div>
+          <h2 data-fleet-footer-group-label>Explore</h2>
+          {navLinks.map((link) => <a href={link.href}>{link.label}</a>)}
+        </div>
+        <div>
+          <h2 data-fleet-footer-group-label>Résumé</h2>
+          <a href={site.resumeUrl}>Read résumé</a>
+          <a href={site.resumePdf}>Download PDF</a>
+          <a href={repoUrl} target="_blank" rel="noopener noreferrer"
+            >Site source</a
+          >
+        </div>
+        <div>
+          <h2 data-fleet-footer-group-label>Connect</h2>
+          {profiles.map((social) => (
+            <a href={social.href} target="_blank" rel="noopener noreferrer">
               {social.label}
             </a>
           ))}
+        </div>
       </nav>
+      <p class="precise-legal" data-fleet-footer-legal>© {year} {site.name}</p>
     </div>
-
-    <div
-      class="mt-8 flex items-center justify-between border-t border-line pt-5 font-mono text-xs text-faint"
-    >
-      <span>© {year} {site.name}</span>
-      <a
-        href={repoUrl}
-        aria-label="GitHub repository"
-        title="GitHub repository"
-        target="_blank"
-        rel="noopener noreferrer"
-        class="text-faint transition-colors hover:text-fg"
-      >
-        <svg
-          viewBox="0 0 16 16"
-          width="20"
-          height="20"
-          fill="currentColor"
-          aria-hidden="true"
-        >
-          <path
-            d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27.68 0 1.36.09 2 .27 1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.013 8.013 0 0016 8c0-4.42-3.58-8-8-8z"
-          />
-        </svg>
-      </a>
-    </div>
-  </div>
+  </fleet-footer-extension>
 </footer>
+
+<style>
+  .precise-footer {
+    color: var(--color-fg);
+  }
+  fleet-footer-extension {
+    --fleet-footer-ui-font: var(--font-sans);
+    --fleet-footer-mono-font: var(--font-mono);
+    --fleet-footer-label-font: var(--font-mono);
+    --fleet-footer-signature-font: var(--font-sans);
+    --fleet-footer-canvas: var(--color-base);
+    --fleet-footer-lower: var(--color-panel-2);
+    --fleet-footer-border: var(--color-line-strong);
+    --fleet-footer-focus: var(--color-accent);
+    --fleet-footer-max-width: 72rem;
+    --fleet-footer-signature-size: clamp(2.25rem, 7.6vw, 6.8rem);
+    --fleet-footer-mobile-signature-size: clamp(1.85rem, 8.2vw, 3.5rem);
+  }
+  fleet-footer-extension::part(wordmark) {
+    white-space: nowrap;
+  }
+  .precise-contact,
+  .precise-navigation {
+    min-width: 0;
+    font-family: var(--font-sans);
+  }
+  .precise-label,
+  .precise-groups h2 {
+    margin: 0 0 0.75rem;
+    color: var(--color-muted);
+    font: 400 0.75rem / 1.5 var(--font-mono);
+    letter-spacing: 0;
+  }
+  .precise-pilot {
+    max-width: 34rem;
+    margin: 0 0 0.5rem;
+    color: var(--color-muted);
+    font-size: 0.875rem;
+    line-height: 1.6;
+  }
+  .precise-email {
+    display: inline-flex;
+    align-items: center;
+    min-height: 44px;
+    max-width: 100%;
+    overflow-wrap: anywhere;
+    color: var(--color-fg);
+    font-size: 0.9375rem;
+    font-weight: 500;
+    text-decoration: underline;
+    text-underline-offset: 4px;
+  }
+  .precise-groups {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 1.25rem;
+  }
+  .precise-groups > div {
+    min-width: 0;
+  }
+  .precise-groups a {
+    display: flex;
+    align-items: center;
+    min-height: 44px;
+    width: fit-content;
+    max-width: 100%;
+    color: var(--color-fg);
+    font-size: 0.875rem;
+    line-height: 1.5;
+    text-decoration: none;
+  }
+  .precise-groups a:hover,
+  .precise-email:hover {
+    color: var(--color-accent);
+    text-decoration: underline;
+    text-underline-offset: 4px;
+  }
+  .precise-groups a:focus-visible,
+  .precise-email:focus-visible {
+    outline: 2px solid var(--color-accent);
+    outline-offset: 4px;
+  }
+  .precise-legal {
+    margin: 1.5rem 0 0;
+    color: var(--color-faint);
+    font-size: 0.75rem;
+  }
+  fleet-footer-extension:not(:defined) {
+    display: block;
+    max-width: 72rem;
+    margin-inline: auto;
+    padding: 2rem 1.25rem;
+    border-top: 1px solid var(--color-line);
+  }
+  fleet-footer-extension:not(:defined) .precise-navigation {
+    margin-top: 1.5rem;
+  }
+  @media (max-width: 640px) {
+    .precise-groups {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 1.5rem 1rem;
+    }
+  }
+</style>
