@@ -18,11 +18,13 @@ const {
 // `build.format: 'file'` makes Astro.url.pathname end in `.html` at build
 // time (e.g. `/about.html`), but Cloudflare Pages serves the extensionless
 // URL and redirects `*.html` to it. Strip the extension so canonical/og:url
-// match the live URLs and the sitemap.
-const canonicalPath = Astro.url.pathname.replace(/\.html$/, '') || '/';
+// match the live URLs and the sitemap. The root file is `/index.html`,
+// whose public canonical is `/` rather than the redirecting `/index`.
+const extensionlessPath = Astro.url.pathname.replace(/\.html$/, '') || '/';
+const canonicalPath = extensionlessPath === '/index' ? '/' : extensionlessPath;
 const canonical = new URL(canonicalPath, Astro.site).href;
 const ogImage = new URL(image, Astro.site).href;
-const isHome = Astro.url.pathname === '/';
+const isHome = canonicalPath === '/';
 const fullTitle = isHome
   ? `${site.name} — ${site.role}`
   : `${title} · ${site.name}`;
