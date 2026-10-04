@@ -10,6 +10,8 @@
  * public repos (2026-10-04); keep them to what the repos can back up.
  */
 
+import { site } from './site';
+
 export const resumeTracks = ['ai-infra', 'backend', 'full-stack'] as const;
 export type ResumeTrack = (typeof resumeTracks)[number];
 
@@ -31,8 +33,8 @@ export const resumeTrackMeta: Record<
   'ai-infra': {
     label: 'AI infra',
     headline: 'Backend & AI Infrastructure Engineer',
-    path: '/resume',
-    pdfPath: '/resume.pdf',
+    path: site.resumeUrl,
+    pdfPath: site.resumePdf,
     pdfFileName: 'Sarthak_Agrawal_Resume_AI_Infra.pdf',
     summary:
       'Backend and AI infrastructure engineer with 4+ years building production services, real-time data pipelines, LLM agents, and developer tools in Go, Python, TypeScript, and Rust. Shipped systems that scaled from 15K to 200K DAU, cut workflow failures by 90%, and built an OpenAI-compatible tool-calling runtime and a read-only MCP server.',

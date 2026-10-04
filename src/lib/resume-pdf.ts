@@ -199,6 +199,11 @@ function renderResumePdf(track: ResumeTrack): Promise<Buffer> {
     doc.on('error', reject);
   });
 
+  // Fail the build rather than ship a résumé that silently spills onto a
+  // second page when a bullet is added.
+  doc.on('pageAdded', () => {
+    throw new Error(`Résumé track "${track}" no longer fits on one page.`);
+  });
   drawHeader(doc, resume.headline);
   drawBody(doc, resume);
   doc.end();

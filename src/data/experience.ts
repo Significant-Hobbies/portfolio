@@ -17,7 +17,7 @@ export type Experience = {
 export const experience: Experience[] = [
   {
     role: 'Software Engineer',
-    company: 'VaultWealth',
+    company: 'Vault Wealth',
     tag: 'Peak XV-backed',
     period: 'Feb 2025 — Present',
     current: true,
@@ -60,6 +60,6 @@ export const experience: Experience[] = [
 /** Education — shown on the /about page. */
 export const education = {
   school: 'Manipal Institute of Technology',
-  degree: 'B.Tech, Computer Science Engineering',
+  degree: 'B.Tech, Computer Science and Engineering',
   period: 'Aug 2018 — Jul 2022',
 };
