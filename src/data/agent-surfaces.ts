@@ -3,12 +3,7 @@ import { getCollection } from 'astro:content';
 import { catalogGroups, fleetCatalog } from './fleet-catalog';
 import { education, experience } from './experience';
 import { domains } from './expertise';
-import {
-  resumeEducation,
-  resumeExperience,
-  resumeProjects,
-  resumeSkills,
-} from './resume';
+import { getResume, type ResumeTrack, resumeTracks } from './resume';
 import { site } from './site';
 import { spotlightProducts } from './spotlight-products';
 
@@ -40,7 +35,6 @@ export async function getAgentSurfaces(): Promise<AgentSurface[]> {
   const home = renderHome();
   const about = renderAbout();
   const projects = renderProjects();
-  const resume = renderResume();
   const blogIndex = [
     '# Writing by Sarthak Agrawal',
     '',
@@ -68,13 +62,16 @@ export async function getAgentSurfaces(): Promise<AgentSurface[]> {
       'Selected public products and the canonical SaaS Maker directory.',
       projects
     ),
-    surface(
-      'resume',
-      '/resume',
-      `${site.name} resume`,
-      'Work experience, skills, selected projects, and education.',
-      resume
-    ),
+    ...resumeTracks.map((track) => {
+      const resume = getResume(track);
+      return surface(
+        track === 'ai-infra' ? 'resume' : `resume-${track}`,
+        resume.path,
+        `${site.name} resume — ${resume.headline}`,
+        `${resume.headline} résumé: work experience, selected projects, skills, and education.`,
+        renderResume(track)
+      );
+    }),
     surface(
       'blog',
       '/blog',
@@ -251,44 +248,53 @@ function renderProjects() {
   ].join('\n');
 }
 
-function renderResume() {
+function renderResume(track: ResumeTrack) {
+  const resume = getResume(track);
   return [
-    `# ${site.name} — ${site.role}`,
+    `# ${site.name} — ${resume.headline}`,
     '',
     `Location: ${site.location}`,
     `Email: ${site.email}`,
     `LinkedIn: ${site.profiles.linkedin}`,
     `GitHub: ${site.profiles.github}`,
+    `PDF: ${site.url}${resume.pdfPath}`,
+    `Other versions: ${resumeTracks
+      .filter((t) => t !== track)
+      .map((t) => `${site.url}${getResume(t).path}`)
+      .join(', ')}`,
+    '',
+    resume.summary,
     '',
     '## Experience',
     '',
-    ...resumeExperience.flatMap((item) => [
+    ...resume.experience.flatMap((item) => [
       `### ${item.role} — ${item.company}`,
       '',
-      `${item.period}${item.note ? ` · ${item.note}` : ''}`,
+      `${item.period} · ${item.note}`,
       '',
       ...item.bullets.map((bullet) => `- ${bullet}`),
       '',
     ]),
-    '## Skills',
-    '',
-    ...resumeSkills.map((group) => `- **${group.label}:** ${group.items}`),
-    '',
     '## Selected projects',
     '',
-    ...resumeProjects.flatMap((project) => [
-      `### ${project.name}`,
+    ...resume.projects.flatMap((project) => [
+      `### ${project.name} — ${project.tagline}`,
       '',
       `Stack: ${project.stack}`,
+      ...(project.href ? [`Link: ${project.href}`] : []),
       '',
       ...project.bullets.map((bullet) => `- ${bullet}`),
       '',
     ]),
+    '## Skills',
+    '',
+    ...resume.skills.map((group) => `- **${group.label}:** ${group.items}`),
+    '',
     '## Education',
     '',
-    `${resumeEducation.degree}, ${resumeEducation.school} (${resumeEducation.period}).`,
+    `${resume.education.degree}, ${resume.education.school} (${resume.education.period}).`,
     '',
-    resumeEducation.detail,
+    resume.education.detail,
   ].join('\n');
 }
 

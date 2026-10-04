@@ -65,17 +65,19 @@ repository statistics; it does not decide which projects belong in the directory
 
 ## Résumé → PDF
 
-`resume.tex` is the source of truth. A GitHub Action
-(`.github/workflows/resume.yml`) compiles it to `public/resume.pdf` on every
-push that touches it — no local LaTeX install needed. The `/resume` page links
-to that file.
+`src/data/resume.ts` is the single source of truth for three résumé tracks:
+AI infra (`/resume`), backend (`/resume/backend`), and full stack
+(`/resume/full-stack`). Each bullet, project, and skill row lists the tracks
+it belongs to, so a fact is written once.
 
-To preview the PDF locally before pushing, compile `resume.tex` any way you like
-(e.g. [Overleaf](https://overleaf.com)) and drop the result at
-`public/resume.pdf`.
+The PDFs (`/resume.pdf`, `/resume-backend.pdf`, `/resume-full-stack.pdf`) are
+generated at build time from the same data by `src/lib/resume-pdf.ts`
+(pdfkit, built-in Helvetica for ATS-friendly text). Run `npm run build` and
+open `dist/resume.pdf` to preview. Keep résumé copy inside the WinAnsi
+character set (no arrows or emoji); the standard PDF fonts can't encode them.
 
-> Note: the phone number is in the PDF but intentionally **not** on the public
-> `/resume` web page. Add it in `src/pages/resume.astro` if you want it shown.
+The phone number is intentionally left out of both the web pages and the PDFs.
+The retired LaTeX source is kept at `docs/archive/resume.tex`.
 
 ## Deploy — Cloudflare Pages
 

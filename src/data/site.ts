@@ -27,8 +27,6 @@ export const site = {
   location: 'India',
   /** The résumé page (on-site, HTML). */
   resumeUrl: '/resume',
-  /** The downloadable PDF — produced by the LaTeX GitHub Action. */
-  resumePdf: '/resume.pdf',
   /** GitHub username — drives build-time stats & the projects page. */
   githubUser: 'sarthakagrawal927',
   /** GitHub organizations that host product repos mirrored into the portfolio. */
