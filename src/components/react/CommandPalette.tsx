@@ -50,11 +50,11 @@ function useKeyboardShortcuts(open: boolean, setOpen: (v: boolean) => void) {
   }, [open, setOpen]);
 }
 
-function CommandItemRow({ item, value, onSelect }: CommandItemRowProps) {
+function CommandItemRow({ item, onSelect }: CommandItemRowProps) {
   return (
     <Command.Item
       key={item.label}
-      value={value}
+      value={item.value}
       onSelect={onSelect}
       className="cmdk-item"
     >
@@ -68,9 +68,8 @@ function CommandItemRow({ item, value, onSelect }: CommandItemRowProps) {
 }
 
 type CommandItemRowProps = {
-  item: Item;
-  /** Search value: the label plus a group keyword, never rendered. */
-  value: string;
+  /** `value` is the search string (label plus a group keyword), never rendered. */
+  item: Item & { value: string };
   onSelect: () => void;
 };
 
@@ -120,8 +119,7 @@ export default function CommandPalette() {
             {navItems.map((item) => (
               <CommandItemRow
                 key={item.label}
-                item={item}
-                value={`nav ${item.label}`}
+                item={{ ...item, value: `nav ${item.label}` }}
                 onSelect={() => run(item.perform)}
               />
             ))}
@@ -131,8 +129,7 @@ export default function CommandPalette() {
             {actionItems.map((item) => (
               <CommandItemRow
                 key={item.label}
-                item={item}
-                value={`action ${item.label}`}
+                item={{ ...item, value: `action ${item.label}` }}
                 onSelect={() =>
                   item.label.startsWith('Copy')
                     ? item.perform()
