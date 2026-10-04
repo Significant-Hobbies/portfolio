@@ -144,10 +144,10 @@ test('local contact footer speaks for one person and preserves the pilot terms',
   assert.doesNotMatch(copy, /\b(?:our team|contact us|we are|we're)\b/i);
 });
 
-test('hosted AI footer uses supported label and prompt attributes for a personal portfolio', async () => {
+test('local AI footer uses supported label and prompt attributes for a personal portfolio', async () => {
   const layout = await readFile(`${ROOT}/src/layouts/BaseLayout.astro`, 'utf8');
   const script = layout.match(
-    /<script\s[^>]*src="https:\/\/sassmaker\.com\/ai-chat-footer\.js"[^>]*>/
+    /<script\s[^>]*src="\/fleet-footer\/ai-chat-footer\.js"[^>]*>/
   )?.[0];
   assert.ok(script);
   assert.match(script, /data-name="Sarthak Agrawal"/);

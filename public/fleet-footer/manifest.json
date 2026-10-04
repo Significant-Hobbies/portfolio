@@ -1,0 +1,95 @@
+{
+  "schemaVersion": 1,
+  "sourceRepository": "https://github.com/sass-maker/saas-maker",
+  "sourceBaseline": "de31581b56fa8b6c20a03d0846ad2204aa2c9bab",
+  "qualification": "shared-checks-v2; four core tests,25 showcase tests,12 studio tests and production build; neutral feedback wording adapted without changing behavior",
+  "files": [
+    {
+      "path": "ai-chat-footer.js",
+      "sha256": "62dab7521696626c59d79e00357610c0c7106c136fbf6ccdf3fd66027ff5bebb",
+      "bytes": 103512,
+      "source": "apps/showcase/dist/ai-chat-footer.js"
+    },
+    {
+      "path": "project-strip.js",
+      "sha256": "21b57c23e4615938549a2f6b3ef3170d0ba4b6e8ed495d783b2c7b1640bc2769",
+      "bytes": 33230,
+      "source": "apps/showcase/dist/project-strip.js"
+    },
+    {
+      "path": "newsletter-capture.js",
+      "sha256": "cf7cfa1c0c52472964d1f68800aa5f6a2829691a6136d0b05d803e765861c247",
+      "bytes": 24806,
+      "source": "apps/showcase/dist/newsletter-capture.js"
+    },
+    {
+      "path": "feedback-launcher.js",
+      "sha256": "6826cda803a2e294052f926ef4ccdf8e16a2d0d8c7007679ef21cfb99957eb4d",
+      "bytes": 236601,
+      "source": "apps/showcase/dist/feedback-launcher.js"
+    },
+    {
+      "path": "fonts/fleet-footer-precise-v1/provenance.json",
+      "sha256": "5d47a2992ad5615e6363a790831b0190b1bc29af796a410d27352a5a5202ba29",
+      "bytes": 2056,
+      "source": "apps/showcase/public/fonts/fleet-footer-precise-v1/provenance.json"
+    },
+    {
+      "path": "fonts/fleet-footer-precise-v1/newsreader-OFL.txt",
+      "sha256": "865f0949b59fab5925506f80102dff3d12e8666412daf52d212db969d40adc25",
+      "bytes": 4394,
+      "source": "apps/showcase/public/fonts/fleet-footer-precise-v1/newsreader-OFL.txt",
+      "adaptation": "Trailing whitespace normalized; license text and attribution preserved."
+    },
+    {
+      "path": "fonts/fleet-footer-precise-v1/README.md",
+      "sha256": "ffeed133d48f9e85a619f2d973c9b0e6071b0a77e1779e7db6038a5c31dfc46c",
+      "bytes": 459,
+      "source": "apps/showcase/public/fonts/fleet-footer-precise-v1/README.md"
+    },
+    {
+      "path": "fonts/fleet-footer-precise-v1/geist.woff2",
+      "sha256": "19f9c92546aa300c312235e3125af1b81394d8db9a4bc4a425cd5b641d2d54e1",
+      "bytes": 29400,
+      "source": "apps/showcase/public/fonts/fleet-footer-precise-v1/geist.woff2"
+    },
+    {
+      "path": "fonts/fleet-footer-precise-v1/geistmono-OFL.txt",
+      "sha256": "f12f59163d92084b0473315ae4566cde0c1233d940ae464f5225a69c347cc691",
+      "bytes": 4387,
+      "source": "apps/showcase/public/fonts/fleet-footer-precise-v1/geistmono-OFL.txt",
+      "adaptation": "Trailing whitespace normalized; license text and attribution preserved."
+    },
+    {
+      "path": "fonts/fleet-footer-precise-v1/geistmono.woff2",
+      "sha256": "3f98383b122fe015a48536cd4a1cda855a201718923ffe74931a01597107b9b5",
+      "bytes": 9864,
+      "source": "apps/showcase/public/fonts/fleet-footer-precise-v1/geistmono.woff2"
+    },
+    {
+      "path": "fonts/fleet-footer-precise-v1/newsreader.woff2",
+      "sha256": "6e4f2958c3a7c4a80acde4e5a679abe7e01bc1e30b92be3c7a8b696ef401d101",
+      "bytes": 132000,
+      "source": "apps/showcase/public/fonts/fleet-footer-precise-v1/newsreader.woff2"
+    },
+    {
+      "path": "fonts/fleet-footer-precise-v1/geist-OFL.txt",
+      "sha256": "f12f59163d92084b0473315ae4566cde0c1233d940ae464f5225a69c347cc691",
+      "bytes": 4387,
+      "source": "apps/showcase/public/fonts/fleet-footer-precise-v1/geist-OFL.txt",
+      "adaptation": "Trailing whitespace normalized; license text and attribution preserved."
+    },
+    {
+      "path": "art/sarthakagrawal-personal.webp",
+      "sha256": "cfb1f34a025880332ad02bbbb617ce8ccd427073391e203ac92bcb56d6d72462",
+      "bytes": 1210724,
+      "source": "apps/showcase/public/footer-art/sarthakagrawal-personal.webp"
+    },
+    {
+      "path": "LICENSE.txt",
+      "sha256": "74935d859b0cc699e1fe53bb467600b2c342ee1cc285a52046e4d1b6fa6441fb",
+      "bytes": 1072,
+      "source": "LICENSE"
+    }
+  ]
+}
