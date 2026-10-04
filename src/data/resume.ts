@@ -99,7 +99,7 @@ const experience: Experience[] = [
         tracks: ALL,
       },
       {
-        text: 'Developed RAG assistants on OpenAI APIs for support, learning, and moderation; the moderation bot reduced human intervention in support queries by 90%.',
+        text: 'Built RAG assistants on OpenAI APIs for support, learning, and general help; the moderation bot reduced human intervention in support queries by 90%.',
         tracks: ALL,
       },
       {

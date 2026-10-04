@@ -5,10 +5,11 @@ role: Software Engineer · Front.Page
 year: '2024'
 summary: >-
   A set of RAG chatbots — support, learning, assistant — built on OpenAI APIs
-  and grounded in real product docs. The support one cut human replies by 90%.
+  and grounded in real product docs, plus a moderation bot that cut human
+  intervention in support queries by 90%.
 stack: ['Node.js', 'OpenAI APIs', 'RAG', 'Vector retrieval']
 metrics:
-  - { value: '-90%', label: 'human support load' }
+  - { value: '-90%', label: 'human support interventions' }
   - { value: '3', label: 'agent surfaces' }
   - { value: 'Grounded', label: 'retrieval-backed answers' }
 featured: true
@@ -53,7 +54,7 @@ confidence".
 
 ## Outcome
 
-Human intervention in support queries dropped **90%**. The team spent its time on
-the hard, genuinely novel tickets while the routine majority resolved
-themselves — and because every answer was retrieval-backed, the bots got better
+The moderation bot cut human intervention in support queries by **90%**. The
+team spent its time on the hard, genuinely novel tickets while the routine
+majority resolved themselves — and because every answer was retrieval-backed, the bots got better
 simply by keeping the knowledge base current.
