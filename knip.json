@@ -6,5 +6,5 @@
     "jscpd",
     "lightningcss"
   ],
-  "ignore": ["public/app-health-log.js"]
+  "ignore": ["public/app-health-log.js", "public/fleet-footer/**"]
 }
