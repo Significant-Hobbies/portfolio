@@ -62,7 +62,7 @@ export function buildActionItems(
     {
       label: 'Download résumé',
       icon: DocIcon,
-      perform: go(site.resumeUrl),
+      perform: go(site.resumePdf),
     },
   ];
 }

@@ -4,7 +4,7 @@
   "version": "1.0.0",
   "private": true,
   "homepage": "https://sarthakagrawal.dev",
-  "description": "Sarthak Agrawal \u2014 AI Infrastructure Engineer. Personal site & portfolio.",
+  "description": "Sarthak Agrawal — AI Infrastructure Engineer. Personal site & portfolio.",
   "scripts": {
     "dev": "astro dev",
     "start": "astro dev",
@@ -40,6 +40,7 @@
     "@tailwindcss/vite": "^4.1.7",
     "astro": "7.3.2",
     "cmdk": "^1.1.1",
+    "pdfkit": "^0.17.2",
     "react": "^19.1.0",
     "react-dom": "^19.1.0",
     "tailwindcss": "^4.1.7"
@@ -47,6 +48,7 @@
   "devDependencies": {
     "@astrojs/check": "^0.9.4",
     "@biomejs/biome": "2.5.5",
+    "@types/pdfkit": "^0.17.6",
     "@types/react": "^19.1.4",
     "@types/react-dom": "^19.1.5",
     "jscpd": "5.0.14",

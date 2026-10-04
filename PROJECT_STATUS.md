@@ -33,7 +33,7 @@ sarthakagrawal.dev is a personal Astro portfolio site for Sarthak Agrawal. It is
 - **IssuePages:** Sandboxed, read-only publication of authored `issues`-labeled
   GitHub issues on the writing index. The static portfolio never calls GitHub
   at request time.
-- **LaTeX GitHub Action:** Resume PDF generation on push (`.github/workflows/resume.yml`).
+- **pdfkit:** Build-time résumé PDFs for three tracks, rendered from `src/data/resume.ts` (`src/lib/resume-pdf.ts`).
 - **Ultracite/Biome:** Repository lint contract for Astro, React, TypeScript,
   scripts, and configuration files.
 - **Fleet code-health tooling:** Exact development-only Knip and jscpd analyzers,
@@ -63,7 +63,7 @@ Node pinned in `.nvmrc` (22). Pushes to `main` run the complete quality and
 static-build CI gate; production deploys use the manual `Portfolio CI / Deploy`
 workflow.
 
-**Env:** Builds run in GitHub Actions, not Cloudflare Pages Git builds. `src/lib/github.ts` reads an optional `GITHUB_TOKEN` to raise API rate limits; `deploy.yml` does not currently set one and the fetch degrades gracefully. Config: `wrangler.jsonc` · `astro.config.mjs` · `resume.tex`.
+**Env:** Builds run in GitHub Actions, not Cloudflare Pages Git builds. `src/lib/github.ts` reads an optional `GITHUB_TOKEN` to raise API rate limits; `deploy.yml` does not currently set one and the fetch degrades gracefully. Config: `wrangler.jsonc` · `astro.config.mjs`.
 
 **Entrypoints:** `src/data/*.ts` · `src/content/work/*.mdx` · `src/content/blog/` · `src/lib/github.ts`.
 
@@ -116,7 +116,7 @@ Performance choices: inline all stylesheets (psi-swarm LCP fix); `build.format: 
 | Canonical config | `astro.config.mjs` `site` + `src/data/site.ts` `url` |
 | Sitemap | Generated via `@astrojs/sitemap` |
 | LLM index | `public/llms.txt` |
-| Resume PDF | `https://sarthakagrawal.dev/resume.pdf` (rebuilt by `.github/workflows/resume.yml`) |
+| Resume PDFs | `https://sarthakagrawal.dev/resume.pdf` (AI infra), `/resume-backend.pdf`, `/resume-full-stack.pdf` — generated at build time |
 
 Cloudflare Pages project name: `sarthakagrawal` (`pages_build_output_dir: dist`).
 
@@ -134,7 +134,7 @@ Cloudflare Pages project name: `sarthakagrawal` (`pages_build_output_dir: dist`)
 - Static `dist/` with `inlineStylesheets: always`, `format: file` → Cloudflare Pages (`pages_build_output_dir: dist`).
 - Live site: `https://sarthakagrawal.dev` — no server runtime.
 - React 19 hydrates selectively for the command palette (`cmdk`); core page content remains static.
-- Resume PDF: `resume.tex` → GitHub Action → `public/resume.pdf`.
+- Resume PDFs: `src/data/resume.ts` → `src/lib/resume-pdf.ts` → `dist/resume*.pdf` at build time.
 - OG/meta via `src/components/astro/Head.astro`; sitemap via `@astrojs/sitemap`.
 - No auth, database, or dynamic API routes.
 
@@ -155,7 +155,7 @@ Cloudflare Pages project name: `sarthakagrawal` (`pages_build_output_dir: dist`)
 - `/work/[slug]` — MDX engineering case studies (vector feeds, pipelines, RAG agents, durable workflows).
 - `/projects` — curated fleet products on owned domains + GitHub archive link.
 - `/about` — bio, experience timeline, education, toolbox.
-- `/resume` — on-site HTML résumé + Download PDF button.
+- `/resume`, `/resume/backend`, `/resume/full-stack` — on-site HTML résumé tracks, each with a build-generated PDF download.
 - `/blog` — technical writing with per-article AI-authorship disclosure.
 - `/privacy`, `/404`.
 
@@ -170,8 +170,9 @@ Cloudflare Pages project name: `sarthakagrawal` (`pages_build_output_dir: dist`)
 
 ### Resume PDF
 
-- `resume.tex` source; GitHub Action workflow documented.
-- Local fallback path documented in README.
+- Three tracks (AI infra, backend, full stack) from one tagged data file; web pages, markdown surfaces, and PDFs share it.
+- Project claims checked against the public PostTrainLLM, CodeVetter, and Pace repos on 2026-10-04.
+- LaTeX source retired to `docs/archive/resume.tex`.
 
 ## Work queue
 

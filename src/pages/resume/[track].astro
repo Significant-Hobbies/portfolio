@@ -1,0 +1,16 @@
+---
+import type { GetStaticPaths } from 'astro';
+
+import ResumeView from '@/components/astro/ResumeView.astro';
+import type { ResumeTrack } from '@/data/resume';
+
+// The AI infra track lives at /resume; the other tracks get their own URL.
+export const getStaticPaths = (() =>
+  (['backend', 'full-stack'] satisfies ResumeTrack[]).map((track) => ({
+    params: { track },
+  }))) satisfies GetStaticPaths;
+
+const { track } = Astro.params;
+---
+
+<ResumeView track={track} />

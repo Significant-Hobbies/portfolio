@@ -16,7 +16,9 @@ Built on Astro, deployed on Cloudflare Pages. The human-facing site is intention
 - [Home](https://sarthakagrawal.dev/): Hero, selected work, and contact
 - [Projects](https://sarthakagrawal.dev/projects): Core products, ten root domains, and curated open-source repos
 - [About](https://sarthakagrawal.dev/about): Background, stack, and availability
-- [Résumé](https://sarthakagrawal.dev/resume): On-site résumé and PDF download
+- [Résumé](https://sarthakagrawal.dev/resume): AI infrastructure résumé ([PDF](https://sarthakagrawal.dev/resume.pdf))
+- [Backend résumé](https://sarthakagrawal.dev/resume/backend): Backend engineering track ([PDF](https://sarthakagrawal.dev/resume-backend.pdf))
+- [Full-stack résumé](https://sarthakagrawal.dev/resume/full-stack): Full-stack engineering track ([PDF](https://sarthakagrawal.dev/resume-full-stack.pdf))
 - [Writing](https://sarthakagrawal.dev/blog): Devlog and technical posts
 - [Privacy](https://sarthakagrawal.dev/privacy): Privacy policy
 - [Fleet performance without Argo](https://sarthakagrawal.dev/blog/fleet-performance-without-argo): Case study on closing desktop LCP p75 under 500 ms across Cloudflare sites
