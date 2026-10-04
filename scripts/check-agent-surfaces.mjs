@@ -37,6 +37,32 @@ for (const route of routes) {
 
   const htmlPath = route === '/' ? 'index.html' : `${route.slice(1)}.html`;
   const html = await readFile(path.join(DIST, htmlPath), 'utf8');
+  const canonicalUrl = new URL(route, ORIGIN).href;
+  assert.equal(
+    html.match(/<link\b[^>]*rel="canonical"[^>]*href="([^"]+)"/)?.[1],
+    canonicalUrl,
+    `${route} canonical must match its sitemap URL`
+  );
+  assert.equal(
+    html.match(/<meta\b[^>]*property="og:url"[^>]*content="([^"]+)"/)?.[1],
+    canonicalUrl,
+    `${route} Open Graph URL must match its sitemap URL`
+  );
+  if (route === '/') {
+    const identity = JSON.parse(
+      html.match(
+        /<script\b[^>]*type="application\/ld\+json"[^>]*>([\s\S]*?)<\/script>/
+      )?.[1] ?? 'null'
+    );
+    const profile = identity?.['@graph']?.find(
+      (node) => node['@type'] === 'ProfilePage'
+    );
+    assert.ok(profile, 'homepage must publish the person ProfilePage');
+    assert.equal(profile.url, ORIGIN);
+    assert.equal(profile.mainEntity?.['@id'], `${ORIGIN}/#person`);
+    const title = html.match(/<title>([^<]+)<\/title>/)?.[1];
+    assert.equal(title, profile.name.replace(/&/g, '&amp;'));
+  }
   // Public contact links must remain usable without Cloudflare's decode JS.
   const unprotectedHtml = html.replace(
     /<!--email_off-->[\s\S]*?<!--\/email_off-->/g,
