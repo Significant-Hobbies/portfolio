@@ -1,18 +1,20 @@
 ---
-title: PostTrainLLM — a transformer built end to end
-tagline: pytorch · webassembly · webgpu · browser
+title: PostTrainLLM — a transformer built end to end, then a local LLM factory
+tagline: pytorch · webassembly · webgpu · mlx-swift
 role: Personal · Learning by building
 year: '2026'
 summary: >-
   A small GPT (~0.8M params, byte-level) written from scratch in three layers —
   a PyTorch reference, a hand-derived C++/WASM implementation, and a full WebGPU
   training loop — running entirely in a browser tab. Every layer's backward
-  pass was finite-difference checked before being trusted.
-stack: ['PyTorch', 'C++', 'WebAssembly', 'WebGPU / WGSL', 'TypeScript', 'Emscripten']
+  pass was finite-difference checked before being trusted. It has since grown
+  into a Mac-first LLM factory and runtime, where a 4B model distilled from ~99
+  frontier rollouts scored 100% on a hard multi-turn tool-calling gate.
+stack: ['PyTorch', 'C++', 'WebAssembly', 'WebGPU / WGSL', 'TypeScript', 'Swift / MLX']
 metrics:
   - { value: '~0.8M', label: 'params, trained in-browser' }
-  - { value: '24/24', label: 'GPU kernels parity-checked' }
-  - { value: '1.6×', label: 'WASM SIMD speedup' }
+  - { value: '10.67×', label: 'WebGPU over WASM, Apple M5 Pro' }
+  - { value: '100%', label: '4B distilled tool-calling gate' }
 featured: true
 order: 0
 repo: 'https://github.com/PostTrainLLM/posttrainllm'
@@ -72,8 +74,11 @@ One note on honesty. An earlier write-up of mine documented WebGPU training as
 headless CI was using `swiftshader`, a **software** WebGPU adapter, so the
 comparison was software-WebGPU racing SIMD-WASM — not a valid GPU number. The
 doc was corrected, the claim withdrawn, and the real-hardware speed left
-explicitly unmeasured. The project's whole method was "verify before claiming";
-that was a miss against it, fixed in the open.
+explicitly unmeasured until it could be measured properly. The project's whole
+method was "verify before claiming"; that was a miss against it, fixed in the
+open. A later paired ABBA run on an Apple M5 Pro measured WebGPU at a 10.67×
+median speedup over WASM on the Large preset, with at most 4.72% final-loss
+drift between backends.
 
 ## Outcome
 
@@ -81,10 +86,23 @@ A complete transformer that runs in a browser tab — ~0.8M params, byte-level,
 trains from scratch, generates samples, survives a refresh. The overfit gate
 sits at cross-entropy 5.55 → 0.002. The SIMD WASM build trains at ~1.6× the
 scalar speed. The WebGPU training loop is correct end to end (24/24 kernels
-parity-checked, the GPU overfit gate passes); the real-hardware speedup is for
-whoever opens the playground on a real GPU to read off — which is, honestly,
-the right way to state an unmeasured number.
+parity-checked, the GPU overfit gate passes), and on real Apple silicon it
+trains the Large preset 10.67× faster than WASM.
 
 The model itself is too small to write coherent prose and is meant to be. The
 point of the project was the learning trail behind it kept visible — the
 write-ups, the staged PRs, every layer's test. That part worked.
+
+## What it became
+
+The browser model was the start, not the end. The same verify-first habit
+carried into a Mac-first LLM factory built on MLX-Swift: data preparation,
+LoRA post-training and distillation, eval gates, trace capture, packaging, and
+an OpenAI-compatible local server with a KV-cached, bounded multi-turn agent
+runtime.
+
+Its strongest measured result: a 4B model distilled on one Mac from ~99
+frontier rollouts scored 100% on a frontier-validated multi-turn tool-calling
+gate, matching DeepSeek-V4-pro, against 83% for Gemma-4-12b-qat and 75% for
+the stock 4B. The full method and head-to-head table live in the repo's
+[frontier-parity write-up](https://github.com/PostTrainLLM/posttrainllm/blob/main/docs/learn/tool-calling-frontier-parity.md).
