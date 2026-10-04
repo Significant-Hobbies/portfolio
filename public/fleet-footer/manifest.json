@@ -1,19 +1,18 @@
 {
   "schemaVersion": 1,
   "sourceRepository": "https://github.com/sass-maker/saas-maker",
-  "sourceBaseline": "de31581b56fa8b6c20a03d0846ad2204aa2c9bab",
-  "qualification": "shared-checks-v2; four core tests,25 showcase tests,12 studio tests and production build; neutral feedback wording adapted without changing behavior",
+  "qualification": "Runtime, original art, fonts and provenance mirror the committed shared Precise graph. Existing OFL license files retain documented trailing-whitespace normalization; text and attribution unchanged. Shared 118 tests and package contracts passed; personal nine focused checks pass; public parity verification pending.",
   "files": [
     {
       "path": "ai-chat-footer.js",
-      "sha256": "62dab7521696626c59d79e00357610c0c7106c136fbf6ccdf3fd66027ff5bebb",
-      "bytes": 103512,
+      "sha256": "7ee5e5dadd4672a201396671f345778b5eba7ca07cb9431efb1e9ad411c0adc7",
+      "bytes": 105515,
       "source": "apps/showcase/dist/ai-chat-footer.js"
     },
     {
       "path": "project-strip.js",
-      "sha256": "21b57c23e4615938549a2f6b3ef3170d0ba4b6e8ed495d783b2c7b1640bc2769",
-      "bytes": 33230,
+      "sha256": "e6c4079ad8fe5c6f7d2bc4e08384861dc679bc043a95fae426dcb0b1fdc970a8",
+      "bytes": 33227,
       "source": "apps/showcase/dist/project-strip.js"
     },
     {
@@ -30,8 +29,8 @@
     },
     {
       "path": "fonts/fleet-footer-precise-v1/provenance.json",
-      "sha256": "5d47a2992ad5615e6363a790831b0190b1bc29af796a410d27352a5a5202ba29",
-      "bytes": 2056,
+      "sha256": "c97362ecb4865f119caa9725ac0fa777d57d43f87898777b4fbd844247a96ccb",
+      "bytes": 1918,
       "source": "apps/showcase/public/fonts/fleet-footer-precise-v1/provenance.json"
     },
     {
@@ -91,5 +90,7 @@
       "bytes": 1072,
       "source": "LICENSE"
     }
-  ]
+  ],
+  "sourceCommit": "d55471b02980aebf0fd9ef941597720ffe7665eb",
+  "reconciliationBase": "d86edd1612b9125961546fa36b464714df95365b"
 }
