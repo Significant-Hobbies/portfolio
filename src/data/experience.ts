@@ -26,7 +26,7 @@ export const experience: Experience[] = [
     highlights: [
       'Built a Financial Planning Service in Go and MySQL, including proprietary logic to compute clients’ financial health scores.',
       'Migrated critical workflows to Temporal, eliminating 90% of unexpected failures and freeing roughly 3 engineering hours every day.',
-      'Led the web app’s migration from MUI to Tailwind and built responsive React components.',
+      'Migrated the web app from MUI to Tailwind and built responsive React components.',
     ],
     stack: ['Go', 'MySQL', 'Temporal', 'React', 'Tailwind'],
   },
@@ -41,9 +41,9 @@ export const experience: Experience[] = [
       'Built a real-time stock-data pipeline with Go, Kafka and Protocol Buffers — supporting DAU growth from 15k to 200k in 14 weeks.',
       'Shipped vector-powered personalized feeds using BERT embeddings, GPT and Milvus, lifting home-feed engagement by 40%.',
       'Built RAG chatbots on OpenAI APIs; the moderation bot cut human intervention in support queries by 90%.',
-      'Optimized hot paths with Redis — O(1) unread-news counts, 92% fewer session-refresh DB calls, and HTML build+load cut from 600ms to 60ms.',
-      'Integrated the Razorpay payment gateway, opening a new revenue stream and lifting overall revenue by 50%.',
-      'Designed real-time stock ticks over Socket.io with room-based, in-memory and Redis pub/sub subscription modes.',
+      'Cut session-refresh DB calls by 92% with queue-based batching and granular session controls; used Redis for O(1) unread-news counts and to cut HTML build+load from 600ms to 60ms.',
+      'Integrated the Razorpay payment gateway, opening a new revenue stream and contributing to a 50% increase in overall revenue.',
+      'Designed real-time stock ticks over Socket.io with room-based, in-memory and Redis-backed subscription modes.',
     ],
     stack: [
       'Go',

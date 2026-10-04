@@ -4,9 +4,9 @@ tagline: streaming · protobuf · fan-out
 role: Software Engineer · Front.Page
 year: '2023'
 summary: >-
-  The streaming backbone of a fintech social app. Go services push live market
-  data through Kafka to clients in real time — and it held up while daily users
-  went from 15k to 200k.
+  The streaming backbone of a fintech social app. Go services stream live
+  market data through Kafka, and Socket.IO delivers real-time ticks to clients —
+  and it held up while daily users went from 15k to 200k.
 stack: ['Go', 'Kafka', 'Protocol Buffers', 'Socket.io', 'Redis']
 metrics:
   - { value: '15k → 200k', label: 'DAU in 14 weeks' }
@@ -36,26 +36,26 @@ The pipeline separates ingest from delivery so each side can scale on its own:
   so a burst on one side never stalls the other.
 - **Protocol Buffers** — the wire format throughout. Compact and fast to
   encode/decode, which matters enormously when the same tick is serialised for
-  thousands of subscribers.
+  every subscriber.
 - **Socket.io delivery** — real-time stock ticks reach clients over Socket.io,
   with three selectable subscription modes: **room-based** fan-out, an
-  **in-memory** path, and **Redis pub/sub** for distributed subscription state.
+  **in-memory** path, and a **Redis-backed** mode for distributed subscription
+  state.
 
 ## Engineering decisions
 
 Offering three subscription modes was deliberate. Different workloads have
 different right answers — in-memory is fastest until you need more than one node;
-Redis pub/sub coordinates across many. Making it a choice meant the system fit
+Redis coordinates across many. Making it a choice meant the system fit
 the deployment instead of forcing one trade-off everywhere.
 
-Scaling to 200k DAU also meant attacking the database. Queue-based batching cut
-write load; granular session handling reduced session-refresh DB calls by
-**92%**; and caching page renders in Redis took HTML build + load from **600ms
+Scaling to 200k DAU also meant attacking the database. Queue-based batching and
+granular session controls reduced session-refresh DB calls by **92%**; and caching page renders in Redis took HTML build + load from **600ms
 to 60ms** — a 10× win that compounded across every request.
 
 ## Outcome
 
-A real-time data path that grew 13× in three months without a rewrite — and
-stayed fast while doing it. The lesson I keep: at scale, the wins are rarely one
+A real-time data path that carried daily users from 15k to 200k in 14 weeks —
+and stayed fast while doing it. The lesson I keep: at scale, the wins are rarely one
 clever thing. They are a dozen unglamorous decisions — batch this, cache that,
 decouple here — each removing a little load.
