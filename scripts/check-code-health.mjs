@@ -133,7 +133,12 @@ function types() {
   output(
     `Types: ${observed.errors} errors, ${observed.warnings} warnings, ${observed.hints} hints.`
   );
-  regress('Types', observed, baselines.types);
+  try {
+    regress('Types', observed, baselines.types);
+  } catch (error) {
+    process.stdout.write(text);
+    throw error;
+  }
   if (result.status !== 0) {
     throw new Error(`Astro check exited with status ${result.status}`);
   }
