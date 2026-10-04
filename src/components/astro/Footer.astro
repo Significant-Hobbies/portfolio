@@ -24,18 +24,8 @@ const repoUrl = 'https://github.com/sarthakagrawal927/portfolio';
   >
     <div slot="cta" class="precise-contact" data-fleet-footer-cta>
       <p class="precise-label">Contact</p>
-      <p class="precise-pilot">
-        I'm available for a $500 USD feature verification pilot: AI agents
-        inspect one agreed TypeScript/Node workflow, run reproducible checks,
-        and write the report. I am the contact for scope and payment. $250 to
-        start, $250 on delivery; three working days after scope and runnable
-        setup are agreed. Fixes are separately scoped.
-      </p>
       <!--email_off-->
-      <a
-        href={`mailto:${site.email}?subject=${encodeURIComponent('$500 feature verification pilot')}`}
-        class="precise-email"
-      >
+      <a href={`mailto:${site.email}`} class="precise-email">
         {site.email}
       </a>
       <!--/email_off-->
@@ -104,13 +94,6 @@ const repoUrl = 'https://github.com/sarthakagrawal927/portfolio';
     color: var(--color-muted);
     font: 400 0.75rem / 1.5 var(--font-mono);
     letter-spacing: 0;
-  }
-  .precise-pilot {
-    max-width: 34rem;
-    margin: 0 0 0.5rem;
-    color: var(--color-muted);
-    font-size: 0.875rem;
-    line-height: 1.6;
   }
   .precise-email {
     display: inline-flex;
