@@ -54,7 +54,7 @@ function CommandItemRow({ item, onSelect }: CommandItemRowProps) {
   return (
     <Command.Item
       key={item.label}
-      value={item.label}
+      value={item.value}
       onSelect={onSelect}
       className="cmdk-item"
     >
@@ -68,7 +68,8 @@ function CommandItemRow({ item, onSelect }: CommandItemRowProps) {
 }
 
 type CommandItemRowProps = {
-  item: Item;
+  /** `value` is the search string (label plus a group keyword), never rendered. */
+  item: Item & { value: string };
   onSelect: () => void;
 };
 
@@ -118,7 +119,7 @@ export default function CommandPalette() {
             {navItems.map((item) => (
               <CommandItemRow
                 key={item.label}
-                item={{ ...item, label: `nav ${item.label}` }}
+                item={{ ...item, value: `nav ${item.label}` }}
                 onSelect={() => run(item.perform)}
               />
             ))}
@@ -128,7 +129,7 @@ export default function CommandPalette() {
             {actionItems.map((item) => (
               <CommandItemRow
                 key={item.label}
-                item={{ ...item, label: `action ${item.label}` }}
+                item={{ ...item, value: `action ${item.label}` }}
                 onSelect={() =>
                   item.label.startsWith('Copy')
                     ? item.perform()
