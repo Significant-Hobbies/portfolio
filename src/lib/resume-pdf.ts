@@ -25,6 +25,20 @@ const BODY = 9.4;
 const BULLET_INDENT = 10;
 const SEPARATOR = '  |  ';
 
+// Windows-1252 additions to Latin-1; anything else renders as garbage.
+const WIN_ANSI_EXTRAS = new Set('€‚ƒ„…†‡ˆ‰Š‹ŒŽ‘’“”•–—˜™š›œžŸ');
+
+function assertWinAnsi(resume: Resume) {
+  for (const ch of JSON.stringify(resume)) {
+    const code = ch.codePointAt(0) ?? 0;
+    if (code > 0xff && !WIN_ANSI_EXTRAS.has(ch)) {
+      throw new Error(
+        `Résumé text has "${ch}" (U+${code.toString(16).toUpperCase()}), which the PDF font can't encode.`
+      );
+    }
+  }
+}
+
 const bareUrl = (url: string) => url.replace(/^https?:\/\/(www\.)?/, '');
 const plainDash = (period: string) => period.replace('—', '-');
 
@@ -180,7 +194,8 @@ function drawBody(doc: Doc, resume: Resume) {
 }
 
 function renderResumePdf(track: ResumeTrack): Promise<Buffer> {
-  const resume = getResume(track);
+  const resume = getResume(track, 'pdf');
+  assertWinAnsi(resume);
   const doc = new PDFDocument({
     size: 'A4',
     margin: LEFT,
