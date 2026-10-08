@@ -3,6 +3,7 @@
   "type": "module",
   "version": "1.0.0",
   "private": true,
+  "packageManager": "pnpm@10.33.2",
   "homepage": "https://sarthakagrawal.dev",
   "description": "Sarthak Agrawal — AI Infrastructure Engineer. Personal site & portfolio.",
   "scripts": {
@@ -11,7 +12,7 @@
     "build": "astro build",
     "preview": "astro preview",
     "astro": "astro",
-    "check": "npm run typecheck",
+    "check": "pnpm run typecheck",
     "lint": "ultracite check .",
     "format:check": "node scripts/check-code-health.mjs format",
     "typecheck": "node scripts/check-code-health.mjs types",
@@ -25,7 +26,7 @@
     "quality:dependencies": "node scripts/check-code-health.mjs dependencies",
     "quality:suppressions": "node scripts/check-code-health.mjs suppressions",
     "quality:hygiene": "node scripts/check-code-health.mjs hygiene",
-    "quality": "npm run format:check && npm run lint && npm run typecheck && npm run test:coverage && npm run build && node scripts/check-agent-surfaces.mjs && npm run quality:unused && npm run quality:complexity && npm run quality:duplication && npm run quality:cycles && npm run quality:dependencies && npm run quality:suppressions && npm run quality:hygiene",
+    "quality": "pnpm run format:check && pnpm run lint && pnpm run typecheck && pnpm run test:coverage && pnpm run build && node scripts/check-agent-surfaces.mjs && pnpm run quality:unused && pnpm run quality:complexity && pnpm run quality:duplication && pnpm run quality:cycles && pnpm run quality:dependencies && pnpm run quality:suppressions && pnpm run quality:hygiene",
     "catalog:sync-public": "node scripts/sync-fleet-public.mjs",
     "catalog:check-public": "node scripts/sync-fleet-public.mjs --check",
     "catalog:sync-hosted": "node scripts/sync-fleet-public.mjs --source=https://sassmaker.com/portfolio.json",
@@ -56,5 +57,10 @@
     "lightningcss": "^1.32.0",
     "typescript": "^5.8.3",
     "ultracite": "7.10.2"
+  },
+  "pnpm": {
+    "onlyBuiltDependencies": [
+      "esbuild"
+    ]
   }
 }

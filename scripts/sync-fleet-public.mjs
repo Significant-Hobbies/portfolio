@@ -68,7 +68,9 @@ if (process.argv.includes('--check')) {
 } else {
   await writeFile(target, text);
   execFileSync(
-    fileURLToPath(new URL('../node_modules/.bin/biome', import.meta.url)),
+    fileURLToPath(
+      new URL('../node_modules/@biomejs/biome/bin/biome', import.meta.url)
+    ),
     [
       'format',
       '--write',

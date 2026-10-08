@@ -54,7 +54,7 @@
       "!!**/dist",
       "!!**/public",
       "!!**/coverage",
-      "!!**/package-lock.json"
+      "!!**/pnpm-lock.yaml"
     ]
   },
   "linter": {

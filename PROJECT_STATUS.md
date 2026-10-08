@@ -50,14 +50,14 @@ sarthakagrawal.dev is a personal Astro portfolio site for Sarthak Agrawal. It is
 
 | Command | Purpose |
 | --- | --- |
-| `npm install` | Install deps |
-| `npm run dev` | http://localhost:4321 |
-| `npm run build` | static build → dist/ |
-| `npm run preview` | serve production build locally |
-| `npm run check` | astro check (types) |
-| `npm run lint` | Ultracite/Biome lint contract |
-| `npm test` | native Node behavior and portfolio contract tests |
-| `npm run quality` | complete code-health, build, and agent-surface gate |
+| `pnpm install` | Install deps |
+| `pnpm run dev` | http://localhost:4321 |
+| `pnpm run build` | static build → dist/ |
+| `pnpm run preview` | serve production build locally |
+| `pnpm run check` | astro check (types) |
+| `pnpm run lint` | Ultracite/Biome lint contract |
+| `pnpm test` | native Node behavior and portfolio contract tests |
+| `pnpm run quality` | complete code-health, build, and agent-surface gate |
 
 Node pinned in `.nvmrc` (22). Pushes to `main` run the complete quality and
 static-build CI gate; production deploys use the manual `Portfolio CI / Deploy`
@@ -73,7 +73,7 @@ Performance choices: inline all stylesheets (psi-swarm LCP fix); `build.format: 
 
 - **2026-09-05 — Docs reconciled with source:** README and this status now
   describe the four-entry spotlight (High Signal removed 2026-08-29), the
-  `cmdk`-only island, the `npm run quality` push gate, the dispatch-only deploy,
+  `cmdk`-only island, the `pnpm run quality` push gate, the dispatch-only deploy,
   and the `/privacy` and agent-surface routes.
 - **2026-08-31 — Dedicated Clarity instrumentation:** Wired the portfolio's
   existing Microsoft Clarity project through the shared site layout and made
@@ -124,12 +124,12 @@ Cloudflare Pages project name: `sarthakagrawal` (`pages_build_output_dir: dist`)
 
 ### Architecture
 
-- The required `npm run quality` CI path enforces the Fleet code-health
+- The required `pnpm run quality` CI path enforces the Fleet code-health
   contract. GitHub data-selection behavior has 100% line, branch, and function
   coverage; legacy format, complexity, and Astro dependency debt is ratcheted
   against repository issue #23.
 - Ultracite/Biome lint contract covers the Astro, React, TypeScript, script,
-  and configuration files with zero findings and runs inside the `npm run quality` CI gate.
+  and configuration files with zero findings and runs inside the `pnpm run quality` CI gate.
 - Build time: Astro 5 static compiles `src/data/*.ts`, MDX case studies/blog, optional GitHub API fetch (`src/lib/github.ts`).
 - Static `dist/` with `inlineStylesheets: always`, `format: file` → Cloudflare Pages (`pages_build_output_dir: dist`).
 - Live site: `https://sarthakagrawal.dev` — no server runtime.
