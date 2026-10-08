@@ -20,20 +20,22 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
+      - uses: pnpm/action-setup@v6
+
       - uses: actions/setup-node@v4
         with:
           node-version: 22
-          cache: npm
+          cache: pnpm
 
       - uses: astral-sh/setup-uv@v7
         with:
           enable-cache: false
 
-      - run: npm ci
+      - run: pnpm install --frozen-lockfile
       - name: Refresh public project catalog for release
         if: github.event_name == 'workflow_dispatch'
-        run: npm run catalog:sync-hosted
-      - run: npm run quality
+        run: pnpm run catalog:sync-hosted
+      - run: pnpm run quality
 
       - name: Deploy to Cloudflare Pages
         if: github.event_name == 'workflow_dispatch' && env.HAS_CLOUDFLARE_API_TOKEN == 'true'
@@ -41,6 +43,7 @@ jobs:
         with:
           apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
           accountId: 7d048325699a5acddb44d3be31cf6ba9
+          packageManager: pnpm
           command: pages deploy dist --project-name=sarthakagrawal --branch=main
 
       - name: Skip deploy without Cloudflare token

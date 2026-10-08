@@ -83,10 +83,9 @@ function count(issues, key) {
 function format() {
   const report = json(
     run(
-      'npm',
+      'pnpm',
       [
         'exec',
-        '--',
         'biome',
         'format',
         '.',
@@ -108,7 +107,7 @@ function format() {
 }
 
 function types() {
-  const result = run('npm', ['exec', '--', 'astro', 'check'], true);
+  const result = run('pnpm', ['exec', 'astro', 'check'], true);
   const text = `${result.stdout}\n${result.stderr}`;
   const match = text.match(
     /(\d+) errors?\s*-\s*(\d+) warnings?\s*-\s*(\d+) hints?/u
@@ -137,10 +136,9 @@ function unused() {
   const issues =
     json(
       run(
-        'npm',
+        'pnpm',
         [
           'exec',
-          '--',
           'knip',
           '--reporter',
           'json',
@@ -199,9 +197,8 @@ function complexity() {
 
 function duplication() {
   const outputDirectory = mkdtempSync(join(tmpdir(), 'portfolio-jscpd-'));
-  run('npm', [
+  run('pnpm', [
     'exec',
-    '--',
     'jscpd',
     ...paths,
     '--min-lines',
@@ -232,10 +229,9 @@ function cycles() {
   const issues =
     json(
       run(
-        'npm',
+        'pnpm',
         [
           'exec',
-          '--',
           'knip',
           '--cycles',
           '--reporter',
@@ -255,15 +251,13 @@ function cycles() {
 }
 
 function dependencies() {
-  const report = json(run('npm', ['audit', '--json'], true), 'npm audit');
-  const advisories = Object.values(report.vulnerabilities ?? {}).flatMap(
-    (item) => item.via?.filter((via) => typeof via === 'object') ?? []
-  );
+  const report = json(run('pnpm', ['audit', '--json'], true), 'pnpm audit');
+  const advisories = Object.values(report.advisories ?? {});
   const ids = (severity) =>
     new Set(
       advisories
         .filter((item) => item.severity === severity)
-        .map((item) => item.url?.match(/\/advisories\/(GHSA-[\w-]+)/u)?.[1])
+        .map((item) => item.github_advisory_id)
         .filter(Boolean)
     );
   const criticalIds = ids('critical');
@@ -275,7 +269,11 @@ function dependencies() {
   const observed = {
     criticalIds: criticalIds.size,
     highIds: highIds.size,
-    highFindings: report.metadata?.vulnerabilities?.high ?? 0,
+    highFindings: new Set(
+      advisories
+        .filter((item) => item.severity === 'high')
+        .map((item) => item.module_name)
+    ).size,
   };
   output(
     `Dependencies: ${observed.criticalIds} critical IDs, ${observed.highIds} accepted high IDs across ${observed.highFindings} high package findings; ${unexpected.length} unexpected.`
@@ -336,7 +334,7 @@ function hygiene() {
     'scripts',
     '.github',
     'package.json',
-    'package-lock.json',
+    'pnpm-lock.yaml',
     'knip.json',
   ]);
   const conflicts = run(
