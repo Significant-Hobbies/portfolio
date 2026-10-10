@@ -1,0 +1,114 @@
+---
+import DeferredScripts from '@/components/astro/DeferredScripts.astro';
+
+const appHealthBrowserKey = import.meta.env.PUBLIC_APP_HEALTH_BROWSER_KEY;
+const appHealthProjectId = import.meta.env.PUBLIC_APP_HEALTH_PROJECT_ID;
+---
+
+<DeferredScripts />
+<script is:inline data-astro-rerun>
+  (() => {
+    const start = () => {
+      const { body } = document;
+      const cover = document.querySelector('[data-deferred-background]');
+      if (cover) {
+        const reveal = () => {
+          cover.style.backgroundImage = `url("${cover.dataset.deferredBackground}")`;
+        };
+        if ('IntersectionObserver' in window) {
+          const observer = new IntersectionObserver(
+            (entries) => {
+              if (entries.some((entry) => entry.isIntersecting)) {
+                reveal();
+                observer.disconnect();
+              }
+            },
+            { rootMargin: '300px' }
+          );
+          observer.observe(cover.parentElement);
+          document.addEventListener(
+            'astro:before-swap',
+            () => observer.disconnect(),
+            { once: true }
+          );
+        } else reveal();
+      }
+      const stylesheet = document.querySelector('link[data-home-rest-css]');
+      if (!stylesheet || stylesheet.hasAttribute('href')) return;
+      const hero = new Image();
+      hero.src = matchMedia('(max-width: 640px)').matches
+        ? '/images/personal-workbench-mobile.webp'
+        : '/images/personal-workbench.webp';
+      hero
+        .decode()
+        .catch(() => {})
+        .then(() => {
+          // The first frame schedules a paint; the next runs after that paint.
+          requestAnimationFrame(() =>
+            requestAnimationFrame(() => {
+              if (body !== document.body) return;
+              stylesheet.rel = 'stylesheet';
+              stylesheet.href = stylesheet.dataset.href;
+            })
+          );
+        });
+    };
+    if (document.readyState === 'loading')
+      document.addEventListener('DOMContentLoaded', start, { once: true });
+    else start();
+  })();
+</script>
+<script
+  is:inline
+  type="text/plain"
+  data-after-load
+  src="/app-health-log.js"
+  defer
+></script>
+{appHealthBrowserKey && appHealthProjectId && (
+  <script is:inline type="text/plain" data-after-load defer src="https://health.sassmaker.com/tracker.js" data-key={appHealthBrowserKey} data-project={appHealthProjectId} data-identity="session" data-vitals data-endpoint="https://ingest.sassmaker.com/v1/browser" />
+)}
+<script
+  is:inline
+  data-astro-rerun
+  type="text/plain"
+  data-after-load
+  src="/fleet-footer/project-strip.js"
+  data-project="sarthakagrawal-personal"
+  data-host-only="true"
+  data-layout="studio"
+  defer
+/>
+<script
+  is:inline
+  data-astro-rerun
+  type="text/plain"
+  data-after-load
+  src="/fleet-footer/ai-chat-footer.js"
+  data-project="sarthakagrawal-personal"
+  data-host-only="true"
+  data-name="Sarthak Agrawal"
+  data-label="Explore my work with AI"
+  data-prompt="Summarize {companyName}'s engineering work and projects from this personal portfolio ({companyUrl}). Keep it concise."
+  data-layout="question"
+  defer
+/>
+<script is:inline>
+  (() => {
+    const tagLinks = () => {
+      if (!document.querySelector('[data-fleet-footer="studio"]')) return;
+      document.querySelectorAll('a[href]').forEach((link) => {
+        const href = link.getAttribute('href');
+        const event =
+          href === '/projects'
+            ? 'projects_opened'
+            : href?.startsWith('/work/')
+              ? 'case_study_opened'
+              : null;
+        if (event) link.setAttribute('data-app-health-event', event);
+      });
+    };
+    document.addEventListener('DOMContentLoaded', tagLinks);
+    document.addEventListener('astro:page-load', tagLinks);
+  })();
+</script>

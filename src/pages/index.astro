@@ -11,6 +11,7 @@ import {
   studioProjectsFeed,
 } from '@saas-maker/ui/blocks/footer';
 import HomeHead from '@/components/astro/HomeHead.astro';
+import HomeScripts from '@/components/astro/HomeScripts.astro';
 import json from '@/content/home.json';
 import publicCatalog from '@/data/fleet-public.json';
 import { navLinks, site } from '@/data/site';
@@ -99,6 +100,7 @@ galleryContent.parse(content);
       >{site.email}</a
     ><!--/email_off-->
   </address>
+  <HomeScripts />
 </Base>
 
 <style is:global>
