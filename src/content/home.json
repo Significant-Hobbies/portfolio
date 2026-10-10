@@ -1,0 +1,252 @@
+{
+  "template": "gallery",
+  "page": {
+    "title": "Sarthak Agrawal — AI Infrastructure & Product Engineer",
+    "description": "Sarthak Agrawal is an AI infrastructure and product engineer building dependable local tools, model systems, and research products.",
+    "theme": "base",
+    "mode": "dark",
+    "motion": false,
+    "canonical": "https://sarthakagrawal.dev/",
+    "og": {
+      "image": "/og.png",
+      "imageWidth": 1200,
+      "imageHeight": 630,
+      "siteName": "Sarthak Agrawal",
+      "twitterCard": "summary_large_image"
+    },
+    "jsonLd": {
+      "@context": "https://schema.org",
+      "@graph": [
+        {
+          "@type": "ProfilePage",
+          "@id": "https://sarthakagrawal.dev/#profile-page",
+          "url": "https://sarthakagrawal.dev",
+          "name": "Sarthak Agrawal — AI Infrastructure & Product Engineer",
+          "mainEntity": {
+            "@id": "https://sarthakagrawal.dev/#person"
+          }
+        },
+        {
+          "@type": "Person",
+          "@id": "https://sarthakagrawal.dev/#person",
+          "name": "Sarthak Agrawal",
+          "alternateName": ["sarthakagrawal927", "sarthakagrawal.dev"],
+          "jobTitle": "AI Infrastructure & Product Engineer",
+          "description": "Sarthak Agrawal is an AI infrastructure and product engineer building dependable local tools, model systems, and research products.",
+          "url": "https://sarthakagrawal.dev",
+          "image": "https://avatars.githubusercontent.com/u/43884471?v=4",
+          "email": "mailto:sarthakagrawal927@gmail.com",
+          "sameAs": [
+            "https://www.linkedin.com/in/sarthakagrawal927",
+            "https://github.com/sarthakagrawal927",
+            "https://x.com/sarthakcodes"
+          ]
+        }
+      ]
+    },
+    "tokens": {
+      "--brand": "#48e5c2",
+      "--brand-foreground": "#08090a",
+      "--brand-soft": "#1f6f5f",
+      "--brand-ink": "#48e5c2",
+      "--background": "#08090a",
+      "--foreground": "#e7e8ea",
+      "--surface": "#0d0e10",
+      "--card": "#141518",
+      "--card-foreground": "#e7e8ea",
+      "--popover": "#141518",
+      "--popover-foreground": "#e7e8ea",
+      "--muted": "#141518",
+      "--muted-foreground": "#9296a0",
+      "--border": "#1d1f23",
+      "--hairline": "#1d1f23",
+      "--primary": "#48e5c2",
+      "--primary-foreground": "#08090a",
+      "--secondary": "#141518",
+      "--secondary-foreground": "#e7e8ea",
+      "--accent": "#141518",
+      "--accent-foreground": "#e7e8ea",
+      "--font-display": "\"Geist Variable\", ui-sans-serif, system-ui, sans-serif",
+      "--font-accent": "var(--font-display)",
+      "--font-text": "var(--font-sans)",
+      "--display-weight": "600",
+      "--display-tracking": "-0.035em",
+      "--display-leading": "1.05",
+      "--radius": "0.375rem"
+    }
+  },
+  "product": "Sarthak Agrawal",
+  "url": "https://sarthakagrawal.dev",
+  "mark": "/favicon.svg",
+  "frame": "none",
+  "nav": [
+    {
+      "label": "work",
+      "href": "/#work"
+    },
+    {
+      "label": "projects",
+      "href": "/projects"
+    },
+    {
+      "label": "about",
+      "href": "/about"
+    },
+    {
+      "label": "writing",
+      "href": "/blog"
+    }
+  ],
+  "headerAction": {
+    "label": "résumé",
+    "href": "/resume"
+  },
+  "hero": {
+    "eyebrow": "Sarthak Agrawal · AI Infrastructure & Product Engineer",
+    "title": "I build dependable *AI products*, from infrastructure to interface.",
+    "lede": "I'm Sarthak Agrawal, an AI infrastructure and product engineer. CodeVetter and PostTrainLLM are my primary focus; the latter is a public research lab, and SaaS Maker keeps the wider directory and shared workshop visible.",
+    "primary": {
+      "label": "see what I’m building",
+      "href": "#focus"
+    },
+    "secondary": {
+      "label": "production case studies →",
+      "href": "#work"
+    },
+    "status": {
+      "label": "Open to AI infra & product roles"
+    },
+    "image": "/images/personal-workbench.webp"
+  },
+  "sections": [
+    {
+      "kind": "statement",
+      "id": "focus",
+      "eyebrow": "// current focus",
+      "title": "Working experiments you can explore.",
+      "lede": "PostTrainLLM offers a working browser model playground. SaaS Maker lists the experiments and reference projects with a useful public surface.",
+      "rows": [
+        {
+          "title": "CodeVetter",
+          "body": "Execution-backed verification for AI-written software changes — local-first and inspectable. https://codevetter.com"
+        },
+        {
+          "title": "PostTrainLLM",
+          "body": "An experimental browser model playground: run small language models locally with visible generation metrics. https://posttrainllm.com"
+        },
+        {
+          "title": "SaaS Maker",
+          "body": "A public directory of working experiments, reference projects and reusable tooling. https://sassmaker.com"
+        }
+      ]
+    },
+    {
+      "kind": "grid",
+      "id": "work",
+      "eyebrow": "// selected work",
+      "title": "A few things I've built.",
+      "lede": "5 projects from my professional and personal work — what the problem was, what I built, and what changed.",
+      "items": [
+        {
+          "image": "/og.png",
+          "alt": "Sarthak Agrawal portfolio social card",
+          "label": "PostTrainLLM — a transformer built end to end, then a local LLM factory",
+          "title": "A small GPT (~0.8M params, byte-level) written from scratch in three layers — a PyTorch reference, a hand-derived C++/WASM implementation, and a full WebGPU training loop — running entirely in a browser tab. Every layer's backward pass was finite-difference checked before being trusted. It has since grown into a Mac-first LLM factory and runtime, where a 4B model distilled from ~99 frontier rollouts scored 100% on a hard multi-turn tool-calling gate.",
+          "href": "/work/posttrainllm"
+        },
+        {
+          "image": "/og.png",
+          "alt": "Sarthak Agrawal portfolio social card",
+          "label": "Vector-Powered Personalized Feeds",
+          "title": "A home feed that actually learns what you like. Content gets embedded with BERT, ranked by similarity in Milvus, and the user vector keeps updating from live events. Engagement went up 40%.",
+          "href": "/work/vector-feeds"
+        },
+        {
+          "image": "/og.png",
+          "alt": "Sarthak Agrawal portfolio social card",
+          "label": "Real-Time Market Data Pipeline",
+          "title": "The streaming backbone of a fintech social app. Go services stream live market data through Kafka, and Socket.IO delivers real-time ticks to clients — and it held up while daily users went from 15k to 200k.",
+          "href": "/work/realtime-pipeline"
+        },
+        {
+          "image": "/og.png",
+          "alt": "Sarthak Agrawal portfolio social card",
+          "label": "RAG Agents for Support & Learning",
+          "title": "A set of RAG chatbots — support, learning, assistant — built on OpenAI APIs and grounded in real product docs, plus a moderation bot that cut human intervention in support queries by 90%.",
+          "href": "/work/rag-agents"
+        },
+        {
+          "image": "/og.png",
+          "alt": "Sarthak Agrawal portfolio social card",
+          "label": "Durable Financial Workflows",
+          "title": "Financial planning can't run on workflows that quietly break. Moving them to Temporal killed 90% of the random failures and gave the team back about three hours a day.",
+          "href": "/work/durable-workflows"
+        }
+      ]
+    }
+  ],
+  "closing": {
+    "id": "directory",
+    "title": "SaaS Maker",
+    "note": "A public directory of working experiments, reference projects and reusable tooling.",
+    "primary": {
+      "label": "open the directory →",
+      "href": "https://sassmaker.com"
+    },
+    "image": "/images/personal-workbench.webp",
+    "credit": "Original illustration for Sarthak Agrawal"
+  },
+  "footer": {
+    "catalogId": "sarthakagrawal-personal",
+    "capture": "newsletter",
+    "summary": "Sarthak Agrawal is an AI infrastructure and product engineer building dependable local tools, model systems, and research products.",
+    "privacyUrl": "/privacy",
+    "links": [
+      {
+        "label": "projects",
+        "href": "/projects"
+      },
+      {
+        "label": "résumé",
+        "href": "/resume"
+      },
+      {
+        "label": "download PDF",
+        "href": "/resume.pdf"
+      },
+      {
+        "label": "privacy",
+        "href": "/privacy"
+      },
+      {
+        "label": "site source",
+        "href": "https://github.com/sarthakagrawal927/portfolio"
+      },
+      {
+        "label": "linkedin",
+        "href": "https://www.linkedin.com/in/sarthakagrawal927"
+      },
+      {
+        "label": "github",
+        "href": "https://github.com/sarthakagrawal927"
+      },
+      {
+        "label": "x",
+        "href": "https://x.com/sarthakcodes"
+      },
+      {
+        "label": "CodeVetter",
+        "href": "https://codevetter.com"
+      },
+      {
+        "label": "PostTrainLLM",
+        "href": "https://posttrainllm.com"
+      },
+      {
+        "label": "SaaS Maker",
+        "href": "https://sassmaker.com"
+      }
+    ],
+    "legal": "© 2026 Sarthak Agrawal"
+  }
+}
