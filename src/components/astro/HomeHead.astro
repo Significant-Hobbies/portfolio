@@ -17,13 +17,24 @@ const appHealthProjectId = import.meta.env.PUBLIC_APP_HEALTH_PROJECT_ID;
 <meta name="generator" content={Astro.generator}>
 <meta name="author" content={site.name}>
 <link rel="icon" type="image/svg+xml" href="/favicon.svg">
-<!-- Base already preloads the display font used by the gallery. Discover the
-     CSS background before style/layout, at the same URL the hero consumes. -->
+<!-- Discover the cover before layout. Match the mobile CSS override without
+     also preloading the desktop image. -->
+<link
+  rel="preload"
+  as="image"
+  type="image/webp"
+  href="/images/personal-workbench-mobile.webp"
+  imagesrcset="/images/personal-workbench-mobile.webp 640w"
+  imagesizes="100vw"
+  media="(max-width: 640px)"
+  fetchpriority="high"
+>
 <link
   rel="preload"
   as="image"
   type="image/webp"
   href="/images/personal-workbench.webp"
+  media="(width > 640px)"
   fetchpriority="high"
 >
 <link rel="sitemap" href="/sitemap-index.xml">
