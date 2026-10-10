@@ -187,6 +187,13 @@ galleryContent.parse(content);
     padding-block: 4rem;
   }
   @media (max-width: 640px) {
+    /* 640 × 534 crop at x=624: (1600 - 640) * 65%.
+       Keeping the full source height and 65% position preserves the cover's
+       framing at every mobile width; no resizing or layout change.
+       The template sets an inline background, hence this scoped override. */
+    html[data-mode] main > section:first-child .motion-parallax {
+      background-image: url("/images/personal-workbench-mobile.webp") !important;
+    }
     html[data-mode] #work ul {
       grid-template-columns: minmax(0, 1fr);
     }
