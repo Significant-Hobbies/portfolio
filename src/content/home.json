@@ -6,6 +6,9 @@
     "theme": "base",
     "mode": "dark",
     "motion": false,
+    "fonts": {
+      "display": "geist"
+    },
     "canonical": "https://sarthakagrawal.dev/",
     "og": {
       "image": "/og.png",
