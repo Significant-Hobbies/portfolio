@@ -1,128 +1,197 @@
 ---
 import { getCollection } from 'astro:content';
-import BaseLayout from '@/layouts/BaseLayout.astro';
-import SectionHeader from '@/components/astro/SectionHeader.astro';
-import WorkCard from '@/components/astro/WorkCard.astro';
-import { site } from '@/data/site';
+import { existsSync } from 'node:fs';
+import { resolve } from 'node:path';
+import Base from '@saas-maker/templates/Base.astro';
+import { GalleryPage } from '@saas-maker/templates/gallery-page';
+import { baseProps } from '@saas-maker/templates/page';
+import { galleryContent } from '@saas-maker/templates/schema';
+import {
+  studioFromProjects,
+  studioProjectsFeed,
+} from '@saas-maker/ui/blocks/footer';
+import HomeHead from '@/components/astro/HomeHead.astro';
+import json from '@/content/home.json';
+import publicCatalog from '@/data/fleet-public.json';
+import { navLinks, site } from '@/data/site';
+import { socials } from '@/data/socials';
 import { spotlightProducts } from '@/data/spotlight-products';
 
 const work = (await getCollection('work'))
   .filter((w) => w.data.featured)
   .sort((a, b) => a.data.order - b.data.order);
+const content = galleryContent.parse(json);
+content.nav = navLinks.map((link) => ({
+  ...link,
+  label: link.label.toLowerCase(),
+}));
+content.headerAction = { label: 'résumé', href: site.resumeUrl };
+
+for (const section of content.sections) {
+  if (section.kind === 'statement' && section.id === 'focus') {
+    section.rows = spotlightProducts.map((project) => ({
+      title: project.label,
+      body: `${project.description} ${project.url}`,
+    }));
+  }
+  if (section.kind === 'grid' && section.id === 'work') {
+    section.lede = `${work.length} ${work.length === 1 ? 'project' : 'projects'} from my professional and personal work — what the problem was, what I built, and what changed.`;
+    section.items = work.map((entry) => {
+      const image = `/images/work/${entry.id}.webp`;
+      // Chrome captures are optional offline; never fabricate a case-study screen.
+      const captured = existsSync(resolve('public', image.slice(1)));
+      return {
+        image: captured ? image : '/og.png',
+        alt: captured
+          ? `${entry.data.title}: the original portfolio case-study heading and summary`
+          : 'Sarthak Agrawal portfolio social card',
+        label: entry.data.title,
+        title: entry.data.summary,
+        href: `/work/${entry.id}`,
+      };
+    });
+  }
+}
+
+if (content.footer) {
+  content.footer.links = [
+    ...content.nav,
+    { label: 'résumé', href: site.resumeUrl },
+    { label: 'download PDF', href: site.resumePdf },
+    { label: 'privacy', href: '/privacy' },
+    {
+      label: 'site source',
+      href: 'https://github.com/sarthakagrawal927/portfolio',
+    },
+    ...socials
+      .filter((social) => social.label !== 'Email')
+      .map((social) => ({
+        label: social.label.toLowerCase(),
+        href: social.href,
+      })),
+    ...spotlightProducts.map((project) => ({
+      label: project.label,
+      href: project.url,
+    })),
+  ];
+  content.footer.legal = `© ${new Date().getFullYear()} ${site.name}`;
+  // The checked-in public projection is the offline fallback for the catalog feed.
+  const projects = await fetch(studioProjectsFeed, {
+    signal: AbortSignal.timeout(1500),
+  })
+    .then((response) =>
+      response.ok ? response.json() : publicCatalog.directory
+    )
+    .catch(() => publicCatalog.directory);
+  content.footer.studio = studioFromProjects(projects, {
+    current: 'sarthakagrawal-personal',
+  });
+}
+// Validate generated collection and catalog data as well as the content file.
+galleryContent.parse(content);
 ---
 
-<BaseLayout title={site.name}>
-  <!-- ----------------------------------------------------------------- -->
-  <!-- Hero                                                              -->
-  <!-- ----------------------------------------------------------------- -->
-  <section class="relative overflow-hidden border-b border-line">
-    <div class="grid-bg pointer-events-none absolute inset-0 opacity-60"></div>
+<Base {...baseProps(content)}>
+  <HomeHead slot="head" />
+  <GalleryPage content={content} />
+  <address class="home-contact">
+    <!--email_off--><a href={`mailto:${site.email}`}
+      >{site.email}</a
+    ><!--/email_off-->
+  </address>
+</Base>
 
-    <div
-      class="relative mx-auto max-w-4xl px-5 py-20 sm:px-8 sm:py-28 lg:py-36"
-    >
-      <div class="max-w-3xl">
-        {site.availability && (
-            <div class="inline-flex items-center gap-2 rounded-full border border-line bg-panel px-3 py-1 font-mono text-xs text-muted">
-              <span class="relative flex h-2 w-2">
-                <span
-                  class="absolute inline-flex h-full w-full rounded-full bg-accent"
-                  style="animation: pulse-ring 2.4s var(--ease-out-expo) infinite;"
-                />
-                <span class="inline-flex h-2 w-2 rounded-full bg-accent" />
-              </span>
-              {site.availability}
-            </div>
-          )}
-
-        <h1
-          class="mt-6 text-balance text-4xl font-semibold leading-[1.05] tracking-tight text-fg sm:text-5xl lg:text-6xl"
-        >
-          I build dependable <span class="text-accent">AI products</span>, from
-          infrastructure to interface.
-        </h1>
-
-        <p
-          class="mt-6 max-w-xl text-pretty text-base leading-relaxed text-muted sm:text-lg"
-        >
-          I'm {site.name}, an AI infrastructure and product engineer. CodeVetter
-          and PostTrainLLM are my primary focus; the latter is a public research
-          lab, and SaaS Maker keeps the wider directory and shared workshop
-          visible.
-        </p>
-
-        <div class="mt-8 flex flex-wrap items-center gap-4">
-          <a
-            href="#focus"
-            class="rounded-md bg-accent px-4 py-2.5 text-sm font-medium text-base transition-opacity hover:opacity-90"
-          >
-            See what I’m building
-          </a>
-          <a
-            href="#work"
-            class="link-underline font-mono text-xs text-muted transition-colors hover:text-fg"
-          >
-            production case studies →
-          </a>
-        </div>
-      </div>
-    </div>
-  </section>
-
-  <!-- ----------------------------------------------------------------- -->
-  <!-- Current focus                                                     -->
-  <!-- ----------------------------------------------------------------- -->
-  <section id="focus" class="scroll-mt-20 border-y border-line bg-panel/40">
-    <div class="mx-auto max-w-6xl px-5 py-20 sm:px-8 sm:py-28">
-      <SectionHeader
-        kicker="// current focus"
-        title="Working experiments you can explore."
-        intro="PostTrainLLM offers a working browser model playground. SaaS Maker lists the experiments and reference projects with a useful public surface."
-      />
-      <div class="mt-10 grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
-        {spotlightProducts.map((project) => (
-            <a
-              href={project.url}
-              target="_blank"
-              rel="noopener noreferrer"
-              class="panel panel-hover group flex flex-col p-5"
-            >
-              <h2 class="font-semibold text-fg transition-colors group-hover:text-accent">
-                {project.label}
-              </h2>
-              <p class="mt-3 flex-1 text-sm leading-relaxed text-muted">
-                {project.description}
-              </p>
-              <span class="mt-5 border-t border-line pt-3 font-mono text-xs text-accent">
-                {project.id === 'saas-maker' ? 'open the directory →' : 'view product →'}
-              </span>
-            </a>
-          ))}
-      </div>
-    </div>
-  </section>
-
-  <!-- ----------------------------------------------------------------- -->
-  <!-- Selected work                                                     -->
-  <!-- ----------------------------------------------------------------- -->
-  <section id="work" class="scroll-mt-20">
-    <div class="mx-auto max-w-6xl px-5 py-20 sm:px-8 sm:py-28">
-      <SectionHeader
-        kicker="// selected work"
-        title="A few things I've built."
-        intro={`${work.length} ${work.length === 1 ? 'project' : 'projects'} from my professional and personal work — what the problem was, what I built, and what changed.`}
-      />
-      {work.length > 0 ? (
-          <div class="mt-10 grid gap-5 sm:grid-cols-2">
-            {work.map((entry, i) => (
-              <WorkCard entry={entry} index={i} />
-            ))}
-          </div>
-        ) : (
-          <p class="mt-10 font-mono text-sm text-faint">
-            Case studies coming soon.
-          </p>
-        )}
-    </div>
-  </section>
-</BaseLayout>
+<style is:global>
+  /* Plain CSS: Gallery owns the home's only Tailwind utilities entry. */
+  .home-contact {
+    padding: 1rem 1.25rem 2rem;
+    font-style: normal;
+    font-size: 0.875rem;
+    text-align: center;
+    overflow-wrap: anywhere;
+  }
+  .home-contact a {
+    text-decoration: underline;
+    text-underline-offset: 4px;
+  }
+  html[data-mode] main > section:first-child {
+    --brand-ink: #48e5c2;
+    --accent-ink: #48e5c2;
+  }
+  html[data-mode] main > section:first-child h1 {
+    max-width: 16ch;
+    font-size: clamp(2.5rem, 1.75rem + 2.5vw, 4rem);
+  }
+  html[data-mode] main > section:first-child > div[aria-hidden]:nth-child(2) {
+    background: linear-gradient(90deg, #08090af2, #08090aaa 60%, #08090a33);
+  }
+  html[data-mode] main > section:first-child > div:last-child {
+    padding-top: 5rem;
+    padding-bottom: 5rem;
+    min-height: 40rem;
+  }
+  html[data-mode] main > section:first-child .motion-parallax {
+    background-position: 65% center;
+  }
+  html[data-mode] #focus h2,
+  html[data-mode] #work h2,
+  html[data-mode] #directory h2 {
+    font-size: clamp(2rem, 1.5rem + 1.5vw, 3rem);
+  }
+  html[data-mode] #focus p.ui-case,
+  html[data-mode] #work p.ui-case {
+    font-family: var(--font-mono);
+    font-size: 0.75rem;
+  }
+  html[data-mode] #focus dl > div {
+    grid-template-columns: minmax(0, 12.5rem) minmax(0, 1fr);
+  }
+  html[data-mode] #focus dd {
+    overflow-wrap: anywhere;
+    font-size: 1rem;
+    line-height: 1.6;
+  }
+  html[data-mode] #work ul {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+  html[data-mode] #work li {
+    border-top: 1px solid var(--border);
+    padding-top: 1.25rem;
+  }
+  /* Gallery requires tile images. Until real captures exist, keep its links
+     as text rather than repeat the portfolio social card in every tile. */
+  html[data-mode] #work a > div:has(img[src="/og.png"]) {
+    display: none;
+  }
+  html[data-mode] #work a > p.ui-case {
+    font-family: var(--font-display);
+    font-size: 1.125rem;
+  }
+  html[data-mode] #work a > p:last-child {
+    color: var(--muted-foreground);
+    font-family: var(--font-sans);
+    font-size: 0.9375rem;
+    font-weight: 400;
+    line-height: 1.6;
+  }
+  html[data-mode] #work a:hover > p.ui-case {
+    color: var(--brand);
+  }
+  html[data-mode] #directory {
+    min-height: 24rem;
+  }
+  html[data-mode] #directory > div[aria-hidden]:nth-child(2) {
+    background: linear-gradient(#08090af2, #08090a80);
+  }
+  html[data-mode] #directory > div:last-of-type {
+    padding-block: 4rem;
+  }
+  @media (max-width: 640px) {
+    html[data-mode] #work ul {
+      grid-template-columns: minmax(0, 1fr);
+    }
+    html[data-mode] #focus dl > div {
+      grid-template-columns: minmax(0, 1fr);
+    }
+  }
+</style>

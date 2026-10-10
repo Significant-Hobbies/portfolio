@@ -1,0 +1,86 @@
+---
+import { ClientRouter } from 'astro:transitions';
+import { site } from '@/data/site';
+import layoutSource from '@/layouts/BaseLayout.astro?raw';
+
+// Reuse the existing theme bootstrap verbatim without importing its layout/CSS
+// or maintaining a second copy of the lamp and route-transition handlers.
+const themeScript = layoutSource.match(
+  /<script is:inline>([\s\S]*?)<\/script>/
+)?.[1];
+if (!themeScript) throw new Error('BaseLayout theme bootstrap is missing');
+const appHealthBrowserKey = import.meta.env.PUBLIC_APP_HEALTH_BROWSER_KEY;
+const appHealthProjectId = import.meta.env.PUBLIC_APP_HEALTH_PROJECT_ID;
+---
+
+<meta name="generator" content={Astro.generator}>
+<meta name="author" content={site.name}>
+<link rel="icon" type="image/svg+xml" href="/favicon.svg">
+<link
+  rel="preload"
+  as="font"
+  type="font/woff2"
+  href="/_astro/geist-latin-wght-normal.BgDaEnEv.woff2"
+  crossorigin
+>
+<link rel="sitemap" href="/sitemap-index.xml">
+<link rel="alternate" type="text/markdown" href="/index.md">
+<meta name="theme-color" content="#08090a">
+<meta property="og:image:type" content="image/png">
+<meta name="twitter:creator" content="@sarthakcodes">
+<script is:inline set:html={themeScript} />
+<ClientRouter />
+<script
+  is:inline
+  async
+  src="https://www.clarity.ms/tag/y6bw8jogxg"
+  onload="if (typeof window.clarity === 'function') window.clarity('set', 'project_id', 'sarthakagrawal-personal')"
+></script>
+<script>
+  import { emitPageView } from '../../lib/product-analytics';
+  emitPageView();
+</script>
+<script is:inline src="/app-health-log.js" defer></script>
+{appHealthBrowserKey && appHealthProjectId && (
+  <script is:inline defer src="https://health.sassmaker.com/tracker.js" data-key={appHealthBrowserKey} data-project={appHealthProjectId} data-identity="session" data-endpoint="https://ingest.sassmaker.com/v1/browser" />
+)}
+<script
+  is:inline
+  data-astro-rerun
+  src="/fleet-footer/project-strip.js"
+  data-project="sarthakagrawal-personal"
+  data-host-only="true"
+  data-layout="studio"
+  defer
+/>
+<script
+  is:inline
+  data-astro-rerun
+  src="/fleet-footer/ai-chat-footer.js"
+  data-project="sarthakagrawal-personal"
+  data-host-only="true"
+  data-name="Sarthak Agrawal"
+  data-label="Explore my work with AI"
+  data-prompt="Summarize {companyName}'s engineering work and projects from this personal portfolio ({companyUrl}). Keep it concise."
+  data-layout="question"
+  defer
+/>
+<script is:inline>
+  (() => {
+    const tagLinks = () => {
+      if (!document.querySelector('[data-fleet-footer="studio"]')) return;
+      document.querySelectorAll('a[href]').forEach((link) => {
+        const href = link.getAttribute('href');
+        const event =
+          href === '/projects'
+            ? 'projects_opened'
+            : href?.startsWith('/work/')
+              ? 'case_study_opened'
+              : null;
+        if (event) link.setAttribute('data-app-health-event', event);
+      });
+    };
+    document.addEventListener('DOMContentLoaded', tagLinks);
+    document.addEventListener('astro:page-load', tagLinks);
+  })();
+</script>

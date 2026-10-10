@@ -16,6 +16,10 @@ async function readHomepageSource() {
   return readFile(`${ROOT}/src/pages/index.astro`, 'utf8');
 }
 
+async function readHomeContent() {
+  return JSON.parse(await readFile(`${ROOT}/src/content/home.json`, 'utf8'));
+}
+
 async function readSiteSource() {
   return readFile(`${ROOT}/src/data/site.ts`, 'utf8');
 }
@@ -71,7 +75,7 @@ test('homepage renders the spotlight set with a distinct directory CTA for SaaS 
   // SaaS Maker must keep its distinct directory CTA copy so it is not
   // presented as a peer product.
   assert.match(
-    home,
+    (await readHomeContent()).closing.primary.label,
     /open the directory/,
     'SaaS Maker must keep its distinct directory CTA copy'
   );
@@ -79,13 +83,17 @@ test('homepage renders the spotlight set with a distinct directory CTA for SaaS 
 });
 
 test('homepage declares one meaningful CTA in the hero', async () => {
-  const home = await readHomepageSource();
+  const home = await readHomeContent();
   // Hero CTA: "See what I'm building" → #focus. This is the activation
   // surface on a static site (outbound click; no server-side event).
-  assert.match(home, /See what I/, 'hero must declare the primary CTA');
   assert.match(
-    home,
-    /href="#focus"/,
+    home.hero.primary.label,
+    /see what I/i,
+    'hero must declare the primary CTA'
+  );
+  assert.equal(
+    home.hero.primary.href,
+    '#focus',
     'hero CTA must anchor to the focus section'
   );
 });
@@ -111,10 +119,8 @@ test('selected-work intro counts the rendered entries and covers personal work',
     home,
     /getCollection\('work'\)[\s\S]*?\.filter\(\(w\) => w\.data\.featured\)/
   );
-  assert.match(home, /work\.map\(\(entry, i\) =>/);
-  const intro = home.match(
-    /kicker="\/\/ selected work"[\s\S]*?intro=\{(`[^`]+`)\}/
-  )?.[1];
+  assert.match(home, /work\.map\(\(entry\) =>/);
+  const intro = home.match(/section\.lede = (`[^`]+`)/)?.[1];
   assert.ok(
     intro,
     'intro must derive its count from the rendered work collection'
