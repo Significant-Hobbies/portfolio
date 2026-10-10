@@ -1,0 +1,30 @@
+<script is:inline>
+  ((c, l, a, r, i) => {
+    // Keep the queue and pending loader across Astro route transitions.
+    if (c[a]) return;
+    c[a] = (...args) => {
+      c[a].q = c[a].q || [];
+      c[a].q.push(args);
+    };
+    let done = false;
+    const events = ['pointerdown', 'keydown', 'touchstart', 'scroll'];
+    function go() {
+      if (done) return;
+      done = true;
+      clearTimeout(timer);
+      events.forEach((event) => {
+        c.removeEventListener(event, go);
+      });
+      const script = l.createElement(r);
+      script.async = true;
+      script.src = `https://www.clarity.ms/tag/${i}`;
+      const [first] = l.getElementsByTagName(r);
+      first.parentNode.insertBefore(script, first);
+    }
+    events.forEach((event) => {
+      c.addEventListener(event, go, { passive: true, once: true });
+    });
+    const timer = setTimeout(go, 90_000);
+  })(window, document, 'clarity', 'script', 'y6bw8jogxg');
+  window.clarity('set', 'project_id', 'sarthakagrawal-personal');
+</script>
