@@ -40,7 +40,7 @@ const appHealthProjectId = import.meta.env.PUBLIC_APP_HEALTH_PROJECT_ID;
 </script>
 <script is:inline src="/app-health-log.js" defer></script>
 {appHealthBrowserKey && appHealthProjectId && (
-  <script is:inline defer src="https://health.sassmaker.com/tracker.js" data-key={appHealthBrowserKey} data-project={appHealthProjectId} data-identity="session" data-endpoint="https://ingest.sassmaker.com/v1/browser" />
+  <script is:inline defer src="https://health.sassmaker.com/tracker.js" data-key={appHealthBrowserKey} data-project={appHealthProjectId} data-identity="session" data-vitals data-endpoint="https://ingest.sassmaker.com/v1/browser" />
 )}
 <script
   is:inline
