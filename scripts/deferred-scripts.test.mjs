@@ -149,11 +149,29 @@ test('critical CSS preserves every initial declaration, including unsupported st
       Buffer,
       createHash,
       transform,
-      readFile: async () => html,
+      readFile: async (file) => {
+        if (file.pathname.endsWith('.tsx')) return 'className="runtime"';
+        if (file.pathname.endsWith('about.html'))
+          return '<html><head><style>.lede{color:red}.unused{color:blue}.runtime{display:flex}.unused .child{color:green}@media(min-width:40rem){.unused{padding:1rem}.lede{padding:2rem}}@font-face{font-family:Geist Fallback;src:local(Arial);size-adjust:102.2072%}</style></head><body class="lede"></body></html>';
+        return html;
+      },
       writeFile: async (file, value) => writes.set(file.pathname, value),
     }
   );
-  const result = [...writes.values()].find((value) => value.includes('<html>'));
+  const about = writes.get(
+    new URL('../dist/about.html', import.meta.url).pathname
+  );
+  assert.match(about, /\.lede\{color:red\}/);
+  assert.match(about, /\.runtime\{display:flex\}/);
+  assert.match(about, /\.unused \.child\{color:green\}/);
+  assert.match(about, /\.lede\{padding:2rem\}/);
+  assert.ok(
+    Math.abs(Number(about.match(/size-adjust:([\d.]+)%/)[1]) - 102.2072) < 0.001
+  );
+  assert.doesNotMatch(about, /color:blue|padding:1rem/);
+  const result = writes.get(
+    new URL('../dist/index.html', import.meta.url).pathname
+  );
   const [head] = result.split('</head>');
   const critical = [...head.matchAll(/<style[^>]*>([\s\S]*?)<\/style>/g)]
     .map((match) => match[1])
