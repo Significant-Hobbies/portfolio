@@ -1,0 +1,46 @@
+/* Geist x-height: 530/1000; Arial: 1062/2048. Scale the local face,
+   then match Geist's 1005 ascent, 295 descent and zero line gap. */
+@font-face {
+  font-family: "Geist Fallback";
+  src: local("Arial");
+  font-style: normal;
+  font-weight: 100 500;
+  size-adjust: 102.2072%;
+  ascent-override: 98.3297%;
+  descent-override: 28.8629%;
+  line-gap-override: 0%;
+}
+
+@font-face {
+  font-family: "Geist Fallback";
+  src: local("Arial Bold");
+  font-style: normal;
+  font-weight: 600 900;
+  size-adjust: 102.2072%;
+  ascent-override: 98.3297%;
+  descent-override: 28.8629%;
+  line-gap-override: 0%;
+}
+
+/* Android's local Roboto has an x-height of 1082/2048. */
+@font-face {
+  font-family: "Geist Fallback Android";
+  src: local("Roboto"), local("Roboto Regular");
+  font-style: normal;
+  font-weight: 100 500;
+  size-adjust: 100.3179%;
+  ascent-override: 100.1815%;
+  descent-override: 29.4065%;
+  line-gap-override: 0%;
+}
+
+@font-face {
+  font-family: "Geist Fallback Android";
+  src: local("Roboto Bold");
+  font-style: normal;
+  font-weight: 600 900;
+  size-adjust: 100.3179%;
+  ascent-override: 100.1815%;
+  descent-override: 29.4065%;
+  line-gap-override: 0%;
+}

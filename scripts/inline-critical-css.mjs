@@ -2,18 +2,61 @@ import { createHash } from 'node:crypto';
 import { readFile, writeFile } from 'node:fs/promises';
 import { transform } from 'lightningcss';
 
+// About shares a Tailwind bundle with other routes. Drop only unused, plain
+// class selectors; preserve compound selectors, states, conditions and fonts.
+// Include the palette's runtime classes because its closed dialog is not SSR'd.
+const aboutFile = new URL('../dist/about.html', import.meta.url);
+const about = await readFile(aboutFile, 'utf8');
+const palette = await Promise.all(
+  ['CommandPalette.tsx', 'command-palette-items.tsx'].map((name) =>
+    readFile(
+      new URL(`../src/components/react/${name}`, import.meta.url),
+      'utf8'
+    )
+  )
+);
+const aboutClasses = new Set(
+  [
+    ...[about, ...palette]
+      .join('\n')
+      .matchAll(
+        /(?:class|className|overlayClassName|contentClassName)="([^"]*)"/g
+      ),
+  ].flatMap((match) => match[1].replaceAll('&amp;', '&').split(/\s+/))
+);
+await writeFile(
+  aboutFile,
+  about.replace(/<style([^>]*)>([\s\S]*?)<\/style>/g, (_, attributes, css) => {
+    const code = transform({
+      filename: 'about.css',
+      code: Buffer.from(css),
+      minify: true,
+      visitor: {
+        Rule(rule) {
+          if (
+            rule.type === 'style' &&
+            rule.value.selectors.every(
+              (selector) =>
+                selector.length === 1 &&
+                selector[0].type === 'class' &&
+                !aboutClasses.has(selector[0].name)
+            )
+          )
+            return [];
+        },
+      },
+    }).code.toString();
+    return `<style${attributes}>${code}</style>`;
+  })
+);
+
 // Home alone uses the gallery bundle. Keep static-page styles (including layout
 // below the fold, so an early scroll never exposes unstyled content), while the
 // library's other blocks, themes and dynamic states load asynchronously.
 const file = new URL('../dist/index.html', import.meta.url);
 const source = await readFile(file, 'utf8');
 const styles = /<style[^>]*>([\s\S]*?)<\/style>/g;
-// Use the same font policy in both CSS stages: a late font download must not
-// rewrap text when the deferred stylesheet becomes active.
-const css = [...source.matchAll(styles)]
-  .map((match) => match[1])
-  .join('\n')
-  .replaceAll('font-display:swap', 'font-display:optional');
+const css = [...source.matchAll(styles)].map((match) => match[1]).join('\n');
 // CSS background URLs are otherwise fetched even far below the viewport.
 // Keep geometry intact and let the home observer activate this decoration.
 const html = source

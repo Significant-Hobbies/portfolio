@@ -1,4 +1,5 @@
 @import "tailwindcss";
+@import "./geist-fallback.css";
 
 /* ------------------------------------------------------------------ *
  * Design tokens — a dark, engineered "systems" aesthetic.
@@ -20,7 +21,8 @@
   --color-warn: #f5b14a;
 
   --font-sans:
-    "Geist Variable", ui-sans-serif, system-ui, -apple-system, sans-serif;
+    "Geist Variable", "Geist Fallback", "Geist Fallback Android", ui-sans-serif,
+    system-ui, -apple-system, sans-serif;
   --font-mono:
     "Geist Mono Variable", ui-monospace, "SF Mono", "JetBrains Mono", monospace;
 

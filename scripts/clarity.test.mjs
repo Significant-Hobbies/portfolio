@@ -73,7 +73,11 @@ test('Clarity queues immediately and injects once on each supported interaction'
 test('Clarity loads after the 90 second fallback without interaction', () => {
   const state = boot();
   assert.deepEqual([...state.timers.keys()], [90_000]);
-  state.timers.get(90_000)();
+  const fallback = state.timers.get(90_000);
+  runInNewContext(script, state.context);
+  assert.equal(state.timers.get(90_000), fallback);
+  assert.equal(state.injected.length, 0);
+  fallback();
   assert.equal(state.injected.length, 1);
   assert.equal(state.listeners.size, 0);
 });

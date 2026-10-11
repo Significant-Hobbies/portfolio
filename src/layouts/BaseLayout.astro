@@ -27,6 +27,7 @@ const appHealthProjectId = import.meta.env.PUBLIC_APP_HEALTH_PROJECT_ID;
 <!doctype html>
 <html lang="en">
   <head>
+    <Head title={title} description={description} image={image} type={type} />
     <script is:inline>
       (() => {
         const storageKey = 'sarthak-theme';
@@ -232,7 +233,6 @@ const appHealthProjectId = import.meta.env.PUBLIC_APP_HEALTH_PROJECT_ID;
         }
       })();
     </script>
-    <Head title={title} description={description} image={image} type={type} />
     <ClientRouter />
     <Clarity />
     <DeferredScripts />
