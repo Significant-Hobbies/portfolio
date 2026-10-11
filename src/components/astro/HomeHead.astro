@@ -2,16 +2,6 @@
 import { ClientRouter } from 'astro:transitions';
 import Clarity from '@/components/astro/Clarity.astro';
 import { site } from '@/data/site';
-import layoutSource from '@/layouts/BaseLayout.astro?raw';
-
-// Reuse the existing theme bootstrap verbatim without importing its layout/CSS
-// or maintaining a second copy of the lamp and route-transition handlers.
-const themeScript = layoutSource.match(
-  /<script is:inline>([\s\S]*?)<\/script>/
-)?.[1];
-if (!themeScript) throw new Error('BaseLayout theme bootstrap is missing');
-const appHealthBrowserKey = import.meta.env.PUBLIC_APP_HEALTH_BROWSER_KEY;
-const appHealthProjectId = import.meta.env.PUBLIC_APP_HEALTH_PROJECT_ID;
 ---
 
 <meta name="generator" content={Astro.generator}>
@@ -24,8 +14,6 @@ const appHealthProjectId = import.meta.env.PUBLIC_APP_HEALTH_PROJECT_ID;
   as="image"
   type="image/webp"
   href="/images/personal-workbench-mobile.webp"
-  imagesrcset="/images/personal-workbench-mobile.webp 640w"
-  imagesizes="100vw"
   media="(max-width: 640px)"
   fetchpriority="high"
 >
@@ -42,54 +30,26 @@ const appHealthProjectId = import.meta.env.PUBLIC_APP_HEALTH_PROJECT_ID;
 <meta name="theme-color" content="#08090a">
 <meta property="og:image:type" content="image/png">
 <meta name="twitter:creator" content="@sarthakcodes">
-<script is:inline set:html={themeScript} />
-<ClientRouter />
-<Clarity />
-<script>
-  import { emitPageView } from '../../lib/product-analytics';
-  emitPageView();
-</script>
-<script is:inline src="/app-health-log.js" defer></script>
-{appHealthBrowserKey && appHealthProjectId && (
-  <script is:inline defer src="https://health.sassmaker.com/tracker.js" data-key={appHealthBrowserKey} data-project={appHealthProjectId} data-identity="session" data-vitals data-endpoint="https://ingest.sassmaker.com/v1/browser" />
-)}
-<script
-  is:inline
-  data-astro-rerun
-  src="/fleet-footer/project-strip.js"
-  data-project="sarthakagrawal-personal"
-  data-host-only="true"
-  data-layout="studio"
-  defer
-/>
-<script
-  is:inline
-  data-astro-rerun
-  src="/fleet-footer/ai-chat-footer.js"
-  data-project="sarthakagrawal-personal"
-  data-host-only="true"
-  data-name="Sarthak Agrawal"
-  data-label="Explore my work with AI"
-  data-prompt="Summarize {companyName}'s engineering work and projects from this personal portfolio ({companyUrl}). Keep it concise."
-  data-layout="question"
-  defer
-/>
 <script is:inline>
   (() => {
-    const tagLinks = () => {
-      if (!document.querySelector('[data-fleet-footer="studio"]')) return;
-      document.querySelectorAll('a[href]').forEach((link) => {
-        const href = link.getAttribute('href');
-        const event =
-          href === '/projects'
-            ? 'projects_opened'
-            : href?.startsWith('/work/')
-              ? 'case_study_opened'
-              : null;
-        if (event) link.setAttribute('data-app-health-event', event);
+    const apply = () => {
+      let theme = 'dark';
+      try {
+        if (localStorage.getItem('sarthak-theme') === 'light') theme = 'light';
+      } catch {}
+      document.documentElement.dataset.theme = theme;
+      document.documentElement.style.colorScheme = theme;
+      document
+        .querySelector('meta[name="theme-color"]')
+        ?.setAttribute('content', theme === 'light' ? '#f7f9fc' : '#08090a');
+      document.querySelectorAll('fleet-footer-extension').forEach((footer) => {
+        footer.setAttribute('theme', theme);
       });
     };
-    document.addEventListener('DOMContentLoaded', tagLinks);
-    document.addEventListener('astro:page-load', tagLinks);
+    apply();
+    document.addEventListener('astro:page-load', apply);
+    document.addEventListener('footer-connect', apply);
   })();
 </script>
+<ClientRouter />
+<Clarity />

@@ -1,0 +1,47 @@
+<script>
+  const loaded = new Set<string>();
+  let scheduledBody: HTMLElement | undefined;
+  const activate = () => {
+    const { body } = document;
+    const run = () => {
+      if (body !== document.body) return;
+      document
+        .querySelectorAll<HTMLScriptElement>('script[data-after-load]')
+        .forEach((placeholder) => {
+          const singleton = !placeholder.src.includes('/fleet-footer/');
+          if (singleton && loaded.has(placeholder.src)) {
+            placeholder.remove();
+            return;
+          }
+          if (singleton) loaded.add(placeholder.src);
+          const script = document.createElement('script');
+          for (const attribute of placeholder.attributes) {
+            if (
+              !['type', 'data-after-load', 'data-astro-rerun'].includes(
+                attribute.name
+              )
+            ) {
+              script.setAttribute(attribute.name, attribute.value);
+            }
+          }
+          // Preserve strip/coordinator order and document.currentScript attributes.
+          script.async = false;
+          placeholder.replaceWith(script);
+        });
+      void import('../../lib/product-analytics').then(({ emitPageView }) =>
+        emitPageView()
+      );
+    };
+    if ('requestIdleCallback' in window)
+      window.requestIdleCallback(run, { timeout: 1000 });
+    else setTimeout(run, 0);
+  };
+  const schedule = () => {
+    if (scheduledBody === document.body) return;
+    scheduledBody = document.body;
+    if (document.readyState === 'complete') activate();
+    else window.addEventListener('load', activate, { once: true });
+  };
+  schedule();
+  document.addEventListener('astro:page-load', schedule);
+</script>
