@@ -54,7 +54,20 @@ await writeFile(
 // below the fold, so an early scroll never exposes unstyled content), while the
 // library's other blocks, themes and dynamic states load asynchronously.
 const file = new URL('../dist/index.html', import.meta.url);
-const source = await readFile(file, 'utf8');
+// Astro's document submit listener runs before the shared footer's window
+// listener. Keep only these API forms out of ClientRouter navigation so the
+// footer can prevent submission and retain its draft when delivery is unclear.
+let footerForms = 0;
+const source = (await readFile(file, 'utf8')).replace(
+  /<form\b[^>]*\bdata-(?:feedback|subscribe)(?=[\s=>])[^>]*>/g,
+  (tag) => {
+    footerForms += 1;
+    return tag.replace('<form', '<form data-astro-reload');
+  }
+);
+if (footerForms !== 2) {
+  throw new Error(`Expected two footer API forms, found ${footerForms}`);
+}
 const styles = /<style[^>]*>([\s\S]*?)<\/style>/g;
 const css = [...source.matchAll(styles)].map((match) => match[1]).join('\n');
 // CSS background URLs are otherwise fetched even far below the viewport.

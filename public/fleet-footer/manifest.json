@@ -23,9 +23,12 @@
     },
     {
       "path": "feedback-launcher.js",
-      "sha256": "6826cda803a2e294052f926ef4ccdf8e16a2d0d8c7007679ef21cfb99957eb4d",
-      "bytes": 236601,
-      "source": "apps/showcase/dist/feedback-launcher.js"
+      "sha256": "ecdccddbcaa37a3a8a1d7b383525a9035053624e7ed529752309e3997a4c573a",
+      "bytes": 237105,
+      "source": "apps/showcase/dist/feedback-launcher.js",
+      "sourceCommit": "218f57dd4f4900ddc578b2d3a0fa008478656a58",
+      "publishedSource": "https://sassmaker.com/feedback-launcher.js",
+      "qualification": "Retry-aware shared child; independently retrieved and hash-verified. Remaining graph retains its original attributed baseline. Portfolio runtime qualification is recorded separately."
     },
     {
       "path": "fonts/fleet-footer-precise-v1/provenance.json",

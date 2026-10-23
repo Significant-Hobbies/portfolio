@@ -139,7 +139,7 @@ test('critical CSS preserves every initial declaration, including unsupported st
     @media (min-width: 40rem) { .font-display { font-size: 3rem; } }
     .below { text-wrap: balance; font-optical-sizing: auto; color: red; }
   `;
-  const html = `<html><head><style>${css}</style></head><body><main><section><h1 class="font-display text-balance">Title <em class="accent">accent</em></h1><p class="lede">Lede</p><a class="button">Action</a></section><section id="focus" class="below"></section></main></body></html>`;
+  const html = `<html><head><style>${css}</style></head><body><main><section><h1 class="font-display text-balance">Title <em class="accent">accent</em></h1><p class="lede">Lede</p><a class="button">Action</a></section><section id="focus" class="below"></section></main><form data-feedback=""></form><form data-subscribe=""></form><form method="get" target="_blank"></form></body></html>`;
   const writes = new Map();
   await runInNewContext(
     `(async () => { ${script.replace(/^import .*;$/gm, '').replaceAll('import.meta.url', 'base')} })()`,
@@ -172,6 +172,9 @@ test('critical CSS preserves every initial declaration, including unsupported st
   const result = writes.get(
     new URL('../dist/index.html', import.meta.url).pathname
   );
+  assert.match(result, /<form data-astro-reload data-feedback="">/);
+  assert.match(result, /<form data-astro-reload data-subscribe="">/);
+  assert.match(result, /<form method="get" target="_blank">/);
   const [head] = result.split('</head>');
   const critical = [...head.matchAll(/<style[^>]*>([\s\S]*?)<\/style>/g)]
     .map((match) => match[1])
