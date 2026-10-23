@@ -25,6 +25,7 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version: 22
+          check-latest: true
           cache: pnpm
 
       - uses: astral-sh/setup-uv@v7

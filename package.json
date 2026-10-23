@@ -42,7 +42,7 @@
     "@saas-maker/templates": "github:sass-maker/ui-library#v0.1.18&path:/packages/templates",
     "@saas-maker/ui": "github:sass-maker/ui-library#v0.1.18&path:/packages/ui",
     "@tailwindcss/vite": "4.3.3",
-    "astro": "7.3.2",
+    "astro": "7.4.2",
     "cmdk": "^1.1.1",
     "pdfkit": "^0.17.2",
     "react": "^19.1.0",
@@ -64,6 +64,14 @@
   "pnpm": {
     "onlyBuiltDependencies": [
       "esbuild"
-    ]
+    ],
+    "patchedDependencies": {
+      "@saas-maker/templates@0.1.18": "patches/saas-maker-templates-footer-retry-0.1.18.patch"
+    },
+    "overrides": {
+      "vite@>=6.0.0 <6.4.5": "6.4.5",
+      "vite@>=8.0.0 <8.3.5": "8.3.5",
+      "smol-toml": "1.9.0"
+    }
   }
 }

@@ -3,6 +3,7 @@ import { navLinks, site } from '@/data/site';
 ---
 
 <header
+  data-portfolio-nav
   class="fixed inset-x-0 top-0 z-50 border-b border-line bg-base/75 backdrop-blur-xl"
 >
   <nav
@@ -94,3 +95,9 @@ import { navLinks, site } from '@/data/site';
     </div>
   </nav>
 </header>
+<style>
+  :global(body:has([data-saas-maker-feedback-mount] .smw-overlay))
+    [data-portfolio-nav] {
+    z-index: 1;
+  }
+</style>
