@@ -31,7 +31,15 @@ function emit(
       api_key: POSTHOG_KEY,
       event,
       distinct_id: journey.id,
-      properties: { ...properties, project_id: PROJECT_ID },
+      properties: {
+        ...properties,
+        project_id: PROJECT_ID,
+        traffic_type:
+          ['localhost', '127.0.0.1'].includes(window.location.hostname) ||
+          new URLSearchParams(window.location.search).get('fleet_qa') === '1'
+            ? 'test'
+            : 'unclassified',
+      },
     }),
     keepalive: true,
   }).catch(() => {

@@ -25,7 +25,13 @@ test('page, case and contact events share only an expiring in-memory journey', a
     ])
   );
   Object.assign(globalThis, {
-    window: { location: { pathname: '/', search: '?secret=private' } },
+    window: {
+      location: {
+        pathname: '/',
+        hostname: '127.0.0.1',
+        search: '?secret=private',
+      },
+    },
     document: {
       querySelector: () => (caseId ? { dataset: { caseStudy: caseId } } : null),
       addEventListener: (name, listener) => {
@@ -58,6 +64,7 @@ test('page, case and contact events share only an expiring in-memory journey', a
     case_id: 'example-case',
     method: 'email',
     project_id: 'sarthakagrawal-personal',
+    traffic_type: 'test',
   });
   assert.doesNotMatch(
     JSON.stringify(events),
@@ -71,6 +78,7 @@ test('page, case and contact events share only an expiring in-memory journey', a
   assert.deepEqual(events.at(-1).properties, {
     page_kind: 'other',
     project_id: 'sarthakagrawal-personal',
+    traffic_type: 'test',
   });
   const beforePrevented = events.length;
   listeners[0]({ target: new ClickTarget(), defaultPrevented: true });
