@@ -23,7 +23,10 @@ const toc = headings.filter((h) => h.depth === 2);
 ---
 
 <BaseLayout title={data.title} description={data.summary} type="article">
-  <article class="mx-auto max-w-6xl px-5 py-14 sm:px-8 sm:py-20">
+  <article
+    data-case-study={entry.id}
+    class="mx-auto max-w-6xl px-5 py-14 sm:px-8 sm:py-20"
+  >
     <a
       href="/#work"
       class="link-underline font-mono text-sm text-muted transition-colors hover:text-accent"
