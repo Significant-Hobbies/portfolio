@@ -6,15 +6,18 @@ let journey: { id: string; lastActivityAt: number } | undefined;
 let contactListenerAdded = false;
 
 function pageContext() {
-  const caseId = document.querySelector<HTMLElement>('[data-case-study]')
-    ?.dataset.caseStudy;
+  const caseId =
+    document.querySelector<HTMLElement>('[data-case-study]')?.dataset.caseStudy;
   if (caseId && /^[a-z0-9-]{1,100}$/.test(caseId)) {
     return { page_kind: 'case_study', case_id: caseId };
   }
   return { page_kind: window.location.pathname === '/' ? 'home' : 'other' };
 }
 
-function emit(event: 'page_view' | 'case_viewed' | 'contact_intent', properties: ReturnType<typeof pageContext> & { method?: 'email' }) {
+function emit(
+  event: 'page_view' | 'case_viewed' | 'contact_intent',
+  properties: ReturnType<typeof pageContext> & { method?: 'email' }
+) {
   if (typeof window === 'undefined') return;
   const now = Date.now();
   if (!journey || now - journey.lastActivityAt >= JOURNEY_IDLE_MS) {
