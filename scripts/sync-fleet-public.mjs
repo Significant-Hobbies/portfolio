@@ -2,6 +2,7 @@ import { readFile, writeFile } from 'node:fs/promises';
 import { execFileSync } from 'node:child_process';
 import { isDeepStrictEqual } from 'node:util';
 import { fileURLToPath } from 'node:url';
+import { normalizePublicCatalog } from './normalize-fleet-public.mjs';
 const defaultSource = new URL(
   '../../saas-maker/catalog/generated/public.json',
   import.meta.url
@@ -28,45 +29,12 @@ if (source) {
 } else {
   text = await readFile(defaultSource, 'utf8');
 }
-const catalog = JSON.parse(text);
-if (
-  catalog.schemaVersion !== 5 ||
-  !Array.isArray(catalog.directory) ||
-  catalog.directory.length === 0 ||
-  !Array.isArray(catalog.products) ||
-  !Array.isArray(catalog.pastProjects) ||
-  !catalog.directory.every((project) => project.shareable === true) ||
-  new Set(catalog.directory.map((project) => project.id)).size !==
-    catalog.directory.length
-) {
-  throw new Error('Only a verified public projection may be synchronized');
-}
-const ids = new Set(catalog.directory.map((project) => project.id));
-const derived = [...catalog.products, ...catalog.pastProjects];
-if (
-  derived.length !== ids.size ||
-  new Set(derived.map((project) => project.id)).size !== ids.size
-)
-  throw new Error('Derived public lists do not match the directory');
-for (const project of [...catalog.directory, ...derived]) {
-  if (
-    project.shareable !== true ||
-    !ids.has(project.id) ||
-    !project.name ||
-    !project.description
-  )
-    throw new Error('Invalid public project');
-  for (const value of [project.url, project.repositoryUrl].filter(Boolean)) {
-    const url = new URL(value);
-    if (url.protocol !== 'https:' || url.username || url.password)
-      throw new Error('Public project URLs must use HTTPS without credentials');
-  }
-}
+const catalog = normalizePublicCatalog(JSON.parse(text));
 if (process.argv.includes('--check')) {
   if (!isDeepStrictEqual(JSON.parse(await readFile(target, 'utf8')), catalog))
     throw new Error('Public projection is stale');
 } else {
-  await writeFile(target, text);
+  await writeFile(target, JSON.stringify(catalog));
   execFileSync(
     fileURLToPath(
       new URL('../node_modules/@biomejs/biome/bin/biome', import.meta.url)
