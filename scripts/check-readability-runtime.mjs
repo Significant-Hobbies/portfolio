@@ -117,3 +117,10 @@ for (const path of [
 console.log(
   'PASS actual Pages middleware with emitted assets: suffix/direct/negotiation, quality, HEAD/CORS, private misses, credential stripping, discovery.'
 );
+
+for (const path of ['/fleet-footer/README.md', '/fleet-footer/fonts/fleet-footer-precise-v1/README.md']) {
+  const asset = new Response('original asset', { headers: { 'content-type': 'text/markdown', 'cache-control': 'public, max-age=3600' } });
+  const response = await onRequest({ request: new Request(`https://sarthakagrawal.dev${path}`), env: { ASSETS: { fetch() { throw new Error('Preserved asset must bypass catalog'); } } }, next: async () => asset });
+  assert.equal(response, asset);
+  assert.equal(response.headers.get('link'), null);
+}

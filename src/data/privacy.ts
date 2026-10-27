@@ -24,8 +24,6 @@ export function privacyMarkdown() {
   return [
     '# Privacy Policy',
     '',
-    `Last updated: ${privacy.updated}`,
-    '',
     '## What this site is',
     '',
     privacy.introduction,

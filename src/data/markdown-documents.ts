@@ -10,7 +10,7 @@ export const markdownIdentity = {
   summary: site.description,
   contact: site.email,
   trainingAllowed: true,
-  excludedPaths: ['/admin', '/auth', '/dashboard', '/api'],
+  excludedPaths: ['/admin', '/auth', '/dashboard'],
   sitemap: `${site.url}/sitemap-index.xml`,
 };
 
