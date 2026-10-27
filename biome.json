@@ -54,7 +54,8 @@
       "!!**/dist",
       "!!**/public",
       "!!**/coverage",
-      "!!**/pnpm-lock.yaml"
+      "!!**/pnpm-lock.yaml",
+      "!!**/src/lib/agent-surfaces"
     ]
   },
   "linter": {

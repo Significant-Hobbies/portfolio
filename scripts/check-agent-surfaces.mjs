@@ -1,5 +1,5 @@
 import assert from 'node:assert/strict';
-import { access, readFile } from 'node:fs/promises';
+import { access, readFile, readdir } from 'node:fs/promises';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 
@@ -79,7 +79,7 @@ const fullCorpus = await readFile(path.join(DIST, 'llms-full.txt'), 'utf8');
 for (const surface of catalog.surfaces) {
   assert.match(
     fullCorpus,
-    new RegExp(`Source page: ${escapeRegex(surface.url)}`)
+    new RegExp(`<!-- source: ${escapeRegex(surface.url)} -->`)
   );
 }
 
@@ -90,3 +90,43 @@ console.log(
 function escapeRegex(value) {
   return value.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
 }
+
+const mdCatalog = JSON.parse(
+  await readFile(path.join(DIST, 'api/md/_catalog'), 'utf8')
+);
+const mdPaths = new Set(mdCatalog.map((entry) => entry.path));
+const htmlPaths = new Set();
+async function verifyHtml(directory) {
+  for (const entry of await readdir(directory, { withFileTypes: true })) {
+    const file = path.join(directory, entry.name);
+    if (entry.isDirectory()) {
+      await verifyHtml(file);
+      continue;
+    }
+    if (!entry.name.endsWith('.html')) continue;
+    const html = await readFile(file, 'utf8');
+    if (/<meta\b[^>]*name="robots"[^>]*content="[^"]*noindex/i.test(html))
+      continue;
+    const canonical = html.match(
+      /<link\b[^>]*rel="canonical"[^>]*href="([^"]+)"/i
+    )?.[1];
+    assert.ok(canonical, `HTML without canonical: ${file}`);
+    const route = new URL(canonical).pathname;
+    htmlPaths.add(route);
+    assert.ok(mdPaths.has(route), `No Markdown renderer: ${route}`);
+    assert.match(html, /name="ai-summary"/);
+    assert.match(html, /rel="alternate"[^>]*type="text\/markdown"/);
+    const markdown = await readFile(
+      path.join(DIST, route === '/' ? 'index.md' : `${route.slice(1)}.md`),
+      'utf8'
+    );
+    assert.ok(markdown.startsWith('# '));
+    assert.ok(markdown.includes(`Canonical: ${canonical}`));
+  }
+}
+await verifyHtml(DIST);
+assert.deepEqual(mdPaths, htmlPaths);
+assert.ok(fullCorpus.length < 500_000);
+console.log(
+  `Public HTML coverage: ${htmlPaths.size}/${mdPaths.size}; bounded full export: ${fullCorpus.length} characters`
+);

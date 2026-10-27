@@ -7,6 +7,12 @@ import { site } from '@/data/site';
 
 <meta name="generator" content={Astro.generator}>
 <meta name="author" content={site.name}>
+<meta name="ai-summary" content={site.description}>
+<script
+  is:inline
+  type="application/ld+json"
+  set:html={JSON.stringify({"@context": "https://schema.org", "@type": "WebSite", name: site.name, url: site.url, description: site.description, publisher: {"@id": site.personId}})}
+/>
 <link rel="icon" type="image/svg+xml" href="/favicon.svg">
 <!-- Discover the cover before layout. Match the mobile CSS override without
      also preloading the desktop image. -->
@@ -27,7 +33,7 @@ import { site } from '@/data/site';
   fetchpriority="high"
 >
 <link rel="sitemap" href="/sitemap-index.xml">
-<link rel="alternate" type="text/markdown" href="/index.md">
+<link rel="alternate" type="text/markdown" href={`${site.url}/index.md`}>
 <meta name="theme-color" content="#08090a">
 <meta property="og:image:type" content="image/png">
 <meta name="twitter:creator" content="@sarthakcodes">
