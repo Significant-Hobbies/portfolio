@@ -5,11 +5,11 @@
   "private": true,
   "packageManager": "pnpm@10.33.2",
   "homepage": "https://sarthakagrawal.dev",
-  "description": "Sarthak Agrawal — AI Infrastructure Engineer. Personal site & portfolio.",
+  "description": "Sarthak Agrawal \u2014 AI Infrastructure Engineer. Personal site & portfolio.",
   "scripts": {
     "dev": "astro dev",
     "start": "astro dev",
-    "build": "astro build && node scripts/inline-critical-css.mjs",
+    "build": "astro build && node scripts/inline-critical-css.mjs && node scripts/check-agent-surfaces.mjs && node scripts/check-readability-runtime.mjs",
     "preview": "astro preview",
     "astro": "astro",
     "check": "pnpm run typecheck",

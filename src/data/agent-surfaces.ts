@@ -1,8 +1,13 @@
 import { getCollection } from 'astro:content';
+import { privacy, privacyMarkdown } from './privacy';
+import homeContent from '../content/home.json';
+import { absoluteMarkdownLinks } from '../lib/agent-surfaces/format.mjs';
 
-import { catalogGroups, fleetCatalog } from './fleet-catalog';
+import { fleetProductGroups, fleetProjectCount } from './fleet-products';
+import { rootDomains } from './root-domains';
+import { getProjectGroups, getRepos } from '../lib/github';
 import { education, experience } from './experience';
-import { domains } from './expertise';
+import { aboutParagraphs, toolbox } from './about';
 import { getResume, type ResumeTrack, resumeTracks } from './resume';
 import { site } from './site';
 import { spotlightProducts } from './spotlight-products';
@@ -13,6 +18,7 @@ export type AgentSurface = {
   title: string;
   description: string;
   markdown: string;
+  lastUpdated?: string;
 };
 
 export function markdownPathFor(path: string) {
@@ -32,18 +38,24 @@ export async function getAgentSurfaces(): Promise<AgentSurface[]> {
     (a, b) => b.data.date.valueOf() - a.data.date.valueOf()
   );
 
-  const home = renderHome();
+  const home = renderHome(sortedWork.filter((entry) => entry.data.featured));
   const about = renderAbout();
-  const projects = renderProjects();
+  const projects = await renderProjects();
   const blogIndex = [
     '# Writing by Sarthak Agrawal',
     '',
-    'Technical notes about AI infrastructure, distributed systems, product engineering, and operating a public software fleet.',
+    'Notes on systems & infrastructure.',
     '',
     ...sortedBlog.map(
       (entry) =>
-        `- [${entry.data.title}](${site.url}/blog/${entry.id}): ${entry.data.description}`
+        `- [${entry.data.title}](${site.url}/blog/${entry.id}) — ${new Intl.DateTimeFormat('en', { dateStyle: 'medium' }).format(entry.data.date)}`
     ),
+    '',
+    '## Working notes, published from GitHub.',
+    '',
+    'Shorter ideas and experiments live in repository issues. I write and edit them on GitHub; this reading view updates without waiting for a site release.',
+    '',
+    '[Read the issue notes on GitHub.](https://github.com/sarthakagrawal927/portfolio/issues?q=is%3Aissue+label%3Aissues+author%3Asarthakagrawal927)',
   ].join('\n');
 
   return [
@@ -85,7 +97,12 @@ export async function getAgentSurfaces(): Promise<AgentSurface[]> {
         `/blog/${entry.id}`,
         entry.data.title,
         entry.data.description,
-        renderContentEntry(entry.data.title, entry.data.description, entry.body)
+        renderContentEntry(
+          entry.data.title,
+          `${entry.data.description}\n\nPublished: ${entry.data.date.toISOString().slice(0, 10)}\nTags: ${entry.data.tags.join(', ')}\n\nWritten by AI agents under ${site.name}’s direction.`,
+          entry.body
+        ),
+        entry.data.date.toISOString().slice(0, 10)
       )
     ),
     surface(
@@ -93,15 +110,8 @@ export async function getAgentSurfaces(): Promise<AgentSurface[]> {
       '/privacy',
       'Privacy',
       'Privacy boundaries for the static portfolio site.',
-      [
-        '# Privacy',
-        '',
-        'This is a static portfolio site. It has no account system, application database, advertising tracker, or user-content upload.',
-        '',
-        'The site may fetch public GitHub repository metadata at build time. Visiting linked products or external profiles is governed by those destinations.',
-        '',
-        `Contact: ${site.email}`,
-      ].join('\n')
+      privacyMarkdown(),
+      privacy.updated
     ),
     ...sortedWork.map((entry) =>
       surface(
@@ -117,6 +127,9 @@ export async function getAgentSurfaces(): Promise<AgentSurface[]> {
             `Role: ${entry.data.role}`,
             `Year: ${entry.data.year}`,
             `Stack: ${entry.data.stack.join(', ')}`,
+            ...entry.data.metrics.map(
+              (metric) => `${metric.label}: ${metric.value}`
+            ),
             ...(entry.data.repo ? [`Source: ${entry.data.repo}`] : []),
             ...(entry.data.demo ? [`Demo: ${entry.data.demo}`] : []),
           ].join('\n'),
@@ -132,52 +145,103 @@ function surface(
   path: string,
   title: string,
   description: string,
-  markdown: string
+  markdown: string,
+  lastUpdated?: string
 ): AgentSurface {
-  return { id, path, title, description, markdown: `${markdown.trim()}\n` };
+  const canonical = new URL(path, site.url).href;
+  const body = markdown.trim().replace(/^# [^\n]+\n*/, '');
+  return {
+    id,
+    path,
+    title,
+    description,
+    lastUpdated,
+    markdown: absoluteMarkdownLinks(
+      `# ${title}\n\n> ${description}\n\nCanonical: ${canonical}\n${lastUpdated ? `Last updated: ${lastUpdated}\n` : ''}\n${body}\n`,
+      canonical
+    ),
+  };
 }
 
-function renderHome() {
-  const profileLinks = Object.entries(site.profiles).map(
-    ([name, url]) => `- ${formatLabel(name)}: ${url}`
-  );
-  const productLinks = spotlightProducts.map(
-    (product) => `- [${product.label}](${product.url}): ${product.description}`
-  );
-
-  return [
+function renderHome(work: Awaited<ReturnType<typeof getCollection<'work'>>>) {
+  const { hero } = homeContent;
+  const lines = [
     `# ${site.name}`,
     '',
-    `${site.role}. ${site.tagline}`,
+    hero.eyebrow,
     '',
-    site.description,
+    hero.title,
     '',
-    '## Current work',
+    hero.lede,
     '',
-    ...experience.map(
-      (item) =>
-        `- ${item.role}, ${item.company} (${item.period}): ${item.summary}`
-    ),
+    hero.status.label,
     '',
-    '## Selected products',
+  ];
+  for (const section of homeContent.sections) {
+    lines.push(`## ${section.title}`, '', section.eyebrow, '');
+    if (section.id === 'focus') {
+      lines.push(
+        section.lede,
+        '',
+        ...spotlightProducts.map(
+          (product) =>
+            `- [${product.label}](${product.url}): ${product.description}`
+        ),
+        ''
+      );
+    } else if (section.id === 'work') {
+      lines.push(
+        `${work.length} ${work.length === 1 ? 'project' : 'projects'} from my professional and personal work — what the problem was, what I built, and what changed.`,
+        '',
+        ...work.map(
+          (entry) =>
+            `- [${entry.data.title}](${site.url}/work/${entry.id}): ${entry.data.summary}`
+        ),
+        ''
+      );
+    }
+  }
+  lines.push(
+    `## ${homeContent.closing.title}`,
     '',
-    ...productLinks,
+    homeContent.closing.note,
     '',
-    '## Canonical identity',
+    `[${homeContent.closing.primary.label}](${homeContent.closing.primary.href})`,
     '',
-    `- Person ID: ${site.personId}`,
-    `- Image: ${site.image}`,
-    `- Location: ${site.location}`,
-    ...profileLinks,
-    `- Email: ${site.email}`,
-  ].join('\n');
+    `Contact: ${site.email}`
+  );
+  return lines.join('\n');
 }
 
 function renderAbout() {
   return [
     `# About ${site.name}`,
     '',
-    site.description,
+    'I like the hard, invisible parts.',
+    '',
+    ...aboutParagraphs.flatMap((parts) => [
+      parts
+        .map((part) =>
+          part.href
+            ? `[${part.text}](${new URL(part.href, site.url).href})`
+            : part.text
+        )
+        .join(''),
+      '',
+    ]),
+    '## Quick facts',
+    '',
+    `- Role: ${site.role}`,
+    '- At: Vault Wealth',
+    `- Based in: ${site.location}`,
+    '- Focus: backend · infra · ai',
+    `- Status: ${site.availability}`,
+    '',
+    '## Education',
+    '',
+    `${education.degree}, ${education.school} (${education.period}).`,
+    '',
+    `[View résumé](${new URL(site.resumeUrl, site.url).href})`,
     '',
     '## Experience',
     '',
@@ -185,67 +249,97 @@ function renderAbout() {
       `### ${item.role} — ${item.company}`,
       '',
       `${item.period}. ${item.summary}`,
+      ...(item.companyUrl ? [`Company: ${item.companyUrl}`] : []),
+      ...(item.tag ? [item.tag] : []),
+      `Stack: ${item.stack.join(', ')}`,
       '',
       ...item.highlights.map((highlight) => `- ${highlight}`),
       '',
     ]),
-    '## Technical focus',
+    '## What I build with.',
     '',
-    ...domains.flatMap((domain) => [
-      `### ${domain.title}`,
+    'Tools earn their place by surviving production — not by being new.',
+    '',
+    ...toolbox.flatMap((group) => [
+      `### ${group.group}`,
       '',
-      domain.blurb,
-      '',
-      `Tools: ${domain.items.join(', ')}`,
+      ...group.items.map((item) => `- ${item}`),
       '',
     ]),
-    '## Education',
-    '',
-    `${education.degree}, ${education.school} (${education.period}).`,
   ].join('\n');
 }
 
-function renderProjects() {
-  return [
+async function renderProjects() {
+  const [groups, repos] = await Promise.all([getProjectGroups(), getRepos()]);
+  const bucketSummary = fleetProductGroups
+    .map((group) => `${group.products.length} ${group.label.toLowerCase()}`)
+    .join(' / ');
+  const lines = [
     '# Projects',
     '',
-    'The selected products below are the primary public work. The full live fleet catalog follows — every maintained product, platform, and experiment with its tier, URL, and description.',
+    '## The product fleet.',
     '',
-    '## Spotlight products',
+    `The public selection contains working experiments: ${bucketSummary}, ${fleetProjectCount} shareable entries total. For the canonical directory and product pages, visit SaaS Maker.`,
     '',
-    ...spotlightProducts.flatMap((product) => [
-      `### ${product.label}`,
-      '',
-      product.description,
-      '',
-      `- Product: ${product.url}`,
-      `- Source: ${product.repositoryUrl}`,
-      `- Organization: ${product.organizationUrl}`,
-      '',
-    ]),
-    '## Full fleet catalog',
+    'SaaS Maker is the broader directory for the fleet — product pages, supporting tools, and the operating layer behind them.',
     '',
-    `${fleetCatalog.length} live projects across four tiers. SaaS Maker (https://sassmaker.com) is the canonical human-readable directory.`,
+    '[Open SaaS Maker](https://sassmaker.com)',
     '',
-    ...catalogGroups.flatMap((group) => [
-      `### ${group.label}`,
+    '## Canonical roots.',
+    '',
+    'Public roots represented in the verified selection.',
+    '',
+    ...rootDomains.map(
+      (root) =>
+        `- [${root.name}](${root.url}) (${root.tier}; ${root.domain}): ${root.blurb}`
+    ),
+    '',
+  ];
+  for (const group of fleetProductGroups) {
+    lines.push(
+      `## ${group.label}`,
       '',
       group.intro,
       '',
-      ...group.entries.flatMap((entry) => {
-        const lines = [
-          `- **${entry.name}** (${entry.tier}, ${entry.priority}) — ${entry.description}`,
-          `  URL: ${entry.url}`,
-        ];
-        if (entry.repo) lines.push(`  Repo: ${entry.repo}`);
-        if (entry.domains.length > 1) {
-          lines.push(`  Domains: ${entry.domains.join(', ')}`);
-        }
-        lines.push('');
-        return lines;
-      }),
-    ]),
-  ].join('\n');
+      ...group.products.map(
+        (product) =>
+          `- [${product.name}](${product.url}) (${product.maturity.replace('-', ' ')}): ${product.description}${product.repo && product.repo !== product.url ? ` Source: ${product.repo}` : ''}`
+      ),
+      ''
+    );
+  }
+  lines.push(
+    '## Explore the source.',
+    '',
+    `Source repositories for the verified public selection. My GitHub archive contains ${repos.length} public repositories, including older work outside this selection.`,
+    ''
+  );
+  if (!groups.length)
+    lines.push("The live project list couldn't be fetched at build time.", '');
+  for (const group of groups) {
+    lines.push(
+      `### ${group.label} (${group.repos.length})`,
+      '',
+      group.intro,
+      ''
+    );
+    for (const repo of group.repos) {
+      const updated = repo.updated
+        ? new Intl.DateTimeFormat('en', {
+            month: 'short',
+            year: 'numeric',
+          }).format(new Date(repo.updated))
+        : '';
+      lines.push(
+        `- [${repo.name.replace(/[-_]/g, ' ')}](${repo.url}): ${repo.description ?? 'No description.'}${repo.language ? ` Language: ${repo.language}.` : ''}${repo.stars > 0 ? ` Stars: ${repo.stars}.` : ''}${repo.forks > 0 ? ` Forks: ${repo.forks}.` : ''}${updated ? ` Updated: ${updated}.` : ''}`
+      );
+    }
+  }
+  lines.push(
+    '',
+    `[Browse all on GitHub](https://github.com/${site.githubUser}?tab=repositories)`
+  );
+  return lines.join('\n');
 }
 
 function renderResume(track: ResumeTrack) {
@@ -305,10 +399,4 @@ function renderContentEntry(
   body: string | undefined
 ) {
   return [`# ${title}`, '', description, '', body?.trim() || ''].join('\n');
-}
-
-function formatLabel(value: string) {
-  return value === 'huggingFace'
-    ? 'Hugging Face'
-    : `${value.charAt(0).toUpperCase()}${value.slice(1)}`;
 }

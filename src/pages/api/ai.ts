@@ -14,7 +14,7 @@ export const GET: APIRoute = async () => {
     llms: `${site.url}/llms.txt`,
     llmsFull: `${site.url}/llms-full.txt`,
     sitemap: `${site.url}/sitemap-index.xml`,
-    markdown: { suffix: '.md', negotiation: false },
+    markdown: { suffix: '.md', negotiation: true },
     surfaces: surfaces.map((surface) => ({
       id: surface.id,
       url: new URL(surface.path, site.url).toString(),

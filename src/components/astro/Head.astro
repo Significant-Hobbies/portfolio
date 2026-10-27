@@ -60,6 +60,9 @@ if (isHome) {
 
 <title>{fullTitle}</title>
 <meta name="description" content={description}>
+{canonicalPath !== "/404" && <meta name="ai-summary" content={description} />}
+{canonicalPath !== "/404" && <link rel="alternate" type="text/markdown" href={new URL(canonicalPath === "/" ? "/index.md" : `${canonicalPath}.md`, site.url).href} />}
+{canonicalPath === "/404" && <meta name="robots" content="noindex, follow" />}
 <meta name="author" content={site.name}>
 <link rel="canonical" href={canonical}>
 
