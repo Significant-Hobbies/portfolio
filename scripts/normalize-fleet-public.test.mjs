@@ -71,6 +71,12 @@ test('schema6 rejects missing, contradictory, duplicate or unsafe selected ident
       data.pastProjects[0].shareable = false;
     },
     (data) => {
+      data.directory[0].lifecycle = 'inactive';
+    },
+    (data) => {
+      data.directory[0].kind = 'unknown';
+    },
+    (data) => {
       data.directory[0].shareable = false;
     },
     (data) => {
@@ -110,10 +116,12 @@ test('schema6 preserves a shareable past directory entry and rejects conflicting
     ...input.pastProjects[0],
     kind: 'product',
     url: 'https://past.example.com',
+    lifecycle: 'active',
     domains: ['past.example.com'],
   });
   const [, past] = normalizePublicCatalog(input).directory;
   assert.equal(past.kind, 'product');
+  assert.equal(past.lifecycle, 'inactive');
   assert.equal(past.url, 'https://past.example.com');
   assert.deepEqual(past.domains, ['past.example.com']);
   input.directory[3].shareable = false;

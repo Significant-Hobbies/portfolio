@@ -106,6 +106,13 @@ export function normalizePublicCatalog(input) {
         (project) => project.id === product.id
       );
       const publicEntry = publicProject(entry);
+      if (
+        !['primary', 'active'].includes(publicEntry.lifecycle) ||
+        !['product', 'platform', 'experiment'].includes(
+          publicEntry.kind ?? 'product'
+        )
+      )
+        throw new Error('Invalid active project classification');
       return {
         ...publicEntry,
         kind: publicEntry.kind ?? 'product',
@@ -120,7 +127,7 @@ export function normalizePublicCatalog(input) {
           ...publicEntry,
           kind: publicEntry.kind ?? 'experiment',
           domains: publicEntry.domains ?? [],
-          lifecycle: publicEntry.lifecycle ?? 'inactive',
+          lifecycle: 'inactive',
         };
       })
     );
