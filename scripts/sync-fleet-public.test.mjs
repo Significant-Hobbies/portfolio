@@ -11,10 +11,34 @@ test('hosted refresh validates catalog before touching the last good snapshot', 
   const target = join(root, 'src/data/fleet-public.json');
   const original = readFileSync(target, 'utf8');
   const catalog = JSON.parse(original);
+  const activeIds = new Set(catalog.products.map((project) => project.id));
+  const expanded = {
+    ...catalog,
+    schemaVersion: 6,
+    directory: [
+      ...catalog.directory.filter((project) => activeIds.has(project.id)),
+      {
+        id: 'not-shareable',
+        shareable: false,
+        description: 'must-not-publish',
+      },
+    ],
+    archivedDirectory: [
+      { id: 'archive-only', description: 'must-not-publish' },
+    ],
+  };
   const temporary = mkdtempSync(join(tmpdir(), 'portfolio-feed-check-'));
   try {
     for (const [response, expected] of [
       [catalog, 0],
+      [expanded, 0],
+      [
+        {
+          ...expanded,
+          products: [{ ...expanded.products[0], shareable: false }],
+        },
+        1,
+      ],
       [{ ...catalog, directory: [] }, 1],
       [
         {
