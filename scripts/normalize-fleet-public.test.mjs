@@ -103,3 +103,21 @@ test('schema6 rejects missing, contradictory, duplicate or unsafe selected ident
     assert.throws(() => normalizePublicCatalog(input));
   }
 });
+
+test('schema6 preserves a shareable past directory entry and rejects conflicting visibility', () => {
+  const input = fixture();
+  input.directory.push({
+    ...input.pastProjects[0],
+    kind: 'product',
+    url: 'https://past.example.com',
+    domains: ['past.example.com'],
+  });
+  const [, past] = normalizePublicCatalog(input).directory;
+  assert.equal(past.kind, 'product');
+  assert.equal(past.url, 'https://past.example.com');
+  assert.deepEqual(past.domains, ['past.example.com']);
+  input.directory[3].shareable = false;
+  assert.throws(() => normalizePublicCatalog(input));
+  input.directory[3].shareable = undefined;
+  assert.throws(() => normalizePublicCatalog(input));
+});

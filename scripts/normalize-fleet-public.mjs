@@ -113,12 +113,16 @@ export function normalizePublicCatalog(input) {
       };
     });
     directory.push(
-      ...pastProjects.map((project) => ({
-        ...project,
-        kind: 'experiment',
-        domains: [],
-        lifecycle: 'inactive',
-      }))
+      ...pastProjects.map((project) => {
+        const entry = input.directory.find((item) => item.id === project.id);
+        const publicEntry = entry ? publicProject(entry) : project;
+        return {
+          ...publicEntry,
+          kind: publicEntry.kind ?? 'experiment',
+          domains: publicEntry.domains ?? [],
+          lifecycle: publicEntry.lifecycle ?? 'inactive',
+        };
+      })
     );
     catalog = {
       schemaVersion: 5,
