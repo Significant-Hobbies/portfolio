@@ -48,6 +48,36 @@ for (const route of routes) {
     canonicalUrl,
     `${route} Open Graph URL must match its sitemap URL`
   );
+  if (route.startsWith('/work/')) {
+    const nodes = [
+      ...html.matchAll(
+        /<script\b[^>]*type="application\/ld\+json"[^>]*>([\s\S]*?)<\/script>/g
+      ),
+    ].flatMap((match) => {
+      const data = JSON.parse(match[1]);
+      return data['@graph'] || [data];
+    });
+    const articles = nodes.filter((node) => node['@type'] === 'TechArticle');
+    assert.equal(
+      articles.length,
+      1,
+      `${route} must identify one case-study article`
+    );
+    const [article] = articles;
+    const source = catalog.surfaces.find(
+      (surface) => surface.url === canonicalUrl
+    );
+    const markdown = await readFile(path.join(DIST, markdownPath), 'utf8');
+    assert.equal(article.headline, markdown.split('\n')[0].slice(2));
+    assert.equal(article.description, source.description);
+    assert.equal(article.url, canonicalUrl);
+    assert.equal(article.mainEntityOfPage, canonicalUrl);
+    assert.equal(article.author?.['@id'], `${ORIGIN}/#person`);
+    const breadcrumb = nodes.find((node) => node['@type'] === 'BreadcrumbList');
+    assert.ok(breadcrumb, `${route} must publish a breadcrumb`);
+    assert.equal(breadcrumb.itemListElement.at(-1)?.item, canonicalUrl);
+    assert.equal(breadcrumb.itemListElement.at(-1)?.name, article.headline);
+  }
   if (route === '/') {
     const identity = JSON.parse(
       html.match(
