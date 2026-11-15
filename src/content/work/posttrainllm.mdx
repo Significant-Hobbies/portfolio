@@ -1,20 +1,16 @@
 ---
-title: PostTrainLLM — a transformer built end to end, then a local LLM factory
+title: PostTrainLLM, a transformer from scratch
 tagline: pytorch · webassembly · webgpu · mlx-swift
 role: Personal · Learning by building
 year: '2026'
 summary: >-
-  A small GPT (~0.8M params, byte-level) written from scratch in three layers —
-  a PyTorch reference, a hand-derived C++/WASM implementation, and a full WebGPU
-  training loop — running entirely in a browser tab. Every layer's backward
-  pass was finite-difference checked before being trusted. It has since grown
-  into a Mac-first LLM factory and runtime, where a 4B model distilled from ~99
-  frontier rollouts scored 100% on a hard multi-turn tool-calling gate.
+  How I built PyTorch, WASM and WebGPU transformer training, verified gradients,
+  and checked a paired Apple M5 Pro run. Source and experiment evidence included.
 stack: ['PyTorch', 'C++', 'WebAssembly', 'WebGPU / WGSL', 'TypeScript', 'Swift / MLX']
 metrics:
-  - { value: '~0.8M', label: 'params, trained in-browser' }
-  - { value: '10.67×', label: 'WebGPU over WASM, Apple M5 Pro' }
-  - { value: '100%', label: '4B distilled tool-calling gate' }
+  - { value: '3', label: 'model implementations' }
+  - { value: '10.67×', label: 'Large WebGPU/WASM, M5 Pro, Sep 2026' }
+  - { value: '12/12', label: '4B file-operations gate' }
 featured: true
 order: 0
 repo: 'https://github.com/PostTrainLLM/posttrainllm'
@@ -23,86 +19,95 @@ demo: 'https://posttrainllm.com'
 
 ## The problem
 
-Most people who use transformers can describe attention with a diagram but
-couldn't write its backward pass from memory. I was one of them. Calling an LLM
-API doesn't teach you how it works; even idiomatic PyTorch mostly teaches you
-*its API*, not the underlying maths.
+I could describe attention with a diagram, but I could not write its backward
+pass from memory. Calling an LLM API did not answer the question I wanted to
+understand. What does it take to implement and verify a transformer myself?
 
-So I set the bar: a working transformer, trainable from scratch in a browser
-tab, with **no autograd anywhere in the WASM and WebGPU paths**. Every layer
-something I'd written, derived, and tested.
+I built a small, byte-level GPT that trains in a browser. The WASM and WebGPU
+paths use backward passes I derived and wrote by hand. PyTorch is the reference
+that lets me compare those implementations against autograd.
 
 ## Architecture
 
-The same model exists at three levels, in build order:
+The same model exists at three levels, in build order.
 
-- **`python_ref/`** — a PyTorch reference: model, training loop, sampler, LoRA,
-  evaluation. ~200 lines of clear code; the source of truth everything else is
-  compared against.
-- **`wasm/`** — the same model in C++, with every backward pass *derived and
-  written by hand*. There is no autograd. Compiled to WebAssembly with
-  Emscripten; built twice — scalar and `-msimd128` for SIMD autovectorization.
-- **`webgpu/`** — full forward, backward, and AdamW on the GPU in WGSL. Tensors
-  stay resident in GPU buffers between ops; a buffer pool reuses them across
-  steps; an entire training step records into one command submission.
+- **PyTorch reference.** Model, training loop, sampling, LoRA and evaluation.
+  This implementation gives the other two an independent numerical reference.
+- **C++ compiled to WebAssembly.** Every backward pass is explicit. Scalar and
+  SIMD builds let me compare two CPU execution paths in the browser.
+- **WebGPU and WGSL.** Forward passes, backward passes and AdamW run on the GPU.
+  Tensors remain in GPU buffers, a pool reuses memory, and one training step
+  records into one command submission.
 
-A browser app picks a backend (WASM or WebGPU), trains in a Web Worker so the
-page never freezes, samples from the model, and checkpoints to OPFS so a run
-survives a refresh.
+The browser runs training in a Web Worker. Checkpoints use OPFS so a run can
+survive a refresh. The public site also exposes the learning paths and recorded
+experiments behind the project.
 
-## Engineering decisions
+## How I checked the implementation
 
-The principle throughout: **every layer had to be testable before it was
-trusted.** Each kernel has a finite-difference gradient check against a
-reference implementation; each model has an "overfit gate" — train on a single
-batch, the cross-entropy loss must collapse to near-zero or the build doesn't
-ship. That one property is what made writing a hand-derived WebGPU backward
-pass tractable. Bugs were caught at the layer they lived in, not three layers
-later as a mystery in the loss curve.
+A finite-difference gradient check compares each hand-written backward pass
+with a numerical estimate. A separate overfit gate asks whether the full model
+can learn one batch. These checks answer different questions. A correct local
+derivative is necessary, but a complete training loop must also update the
+right parameters and reduce loss.
 
-The three implementations were built in that order on purpose: the PyTorch
-reference exists so the C++ has something to be wrong against; the C++ overfit
-gate exists so the WebGPU does too. Each level pins the next. The WebGPU
-training port itself went in as six staged pull requests — GPU tensors and
-matmul, the elementwise ops, attention, embeddings + cross-entropy + AdamW, the
-orchestrator, the app integration — each parity-checked against WASM before the
-next began. When everything is verifiable, the diffs stay small and the bugs
-stay local.
+I built the PyTorch reference first, then WASM, then WebGPU. Each stage had a
+working implementation to compare with. The GPU work shipped in bounded
+pieces, including tensor operations, attention, embeddings, the loss function,
+AdamW, and the training orchestrator.
 
-One note on honesty. An earlier write-up of mine documented WebGPU training as
-~2× slower than WASM based on automated measurements; I later discovered the
-headless CI was using `swiftshader`, a **software** WebGPU adapter, so the
-comparison was software-WebGPU racing SIMD-WASM — not a valid GPU number. The
-doc was corrected, the claim withdrawn, and the real-hardware speed left
-explicitly unmeasured until it could be measured properly. The project's whole
-method was "verify before claiming"; that was a miss against it, fixed in the
-open. A later paired ABBA run on an Apple M5 Pro measured WebGPU at a 10.67×
-median speedup over WASM on the Large preset, with at most 4.72% final-loss
-drift between backends.
+An early automated comparison reported WebGPU slower than WASM. The browser
+was using SwiftShader, a software adapter. That measured software WebGPU
+against SIMD WASM. I withdrew the hardware interpretation and kept the failure
+in the project record.
 
-## Outcome
+## What the browser benchmark actually measured
 
-A complete transformer that runs in a browser tab — ~0.8M params, byte-level,
-trains from scratch, generates samples, survives a refresh. The overfit gate
-sits at cross-entropy 5.55 → 0.002. The SIMD WASM build trains at ~1.6× the
-scalar speed. The WebGPU training loop is correct end to end (24/24 kernels
-parity-checked, the GPU overfit gate passes), and on real Apple silicon it
-trains the Large preset 10.67× faster than WASM.
+The retained hardware run was recorded on **2 September 2026**, on **one Apple
+M5 Pro in Chrome 151**. It compared the **Large preset**, using six layers,
+width 192, context 128 and batch size 12. The sequence was WASM, WebGPU,
+WebGPU, WASM, with 20 training steps per arm.
 
-The model itself is too small to write coherent prose and is meant to be. The
-point of the project was the learning trail behind it kept visible — the
-write-ups, the staged PRs, every layer's test. That part worked.
+The recorded median time per step was **1,462.50 ms for WASM** and **137.08 ms
+for WebGPU**, a **10.67× ratio for this workload**. The maximum paired final-loss
+relative drift was **4.72%**. Those numbers describe this short paired run.
+They do not establish the same ratio on other presets, longer training runs,
+other browsers or other hardware.
 
-## What it became
+Read the [immutable paired-result artifact](https://github.com/PostTrainLLM/posttrainllm/blob/a7f3a54dd9310dcd70d208763c4332ab4917623d/evals/verified-wins/webgpu-paired-result-v1.json)
+for the four individual arms, adapter checks, input hashes and tested source
+revision. The [paired-run contract](https://github.com/PostTrainLLM/posttrainllm/blob/a7f3a54dd9310dcd70d208763c4332ab4917623d/evals/verified-wins/webgpu-v1.json)
+records the acceptance gates. This is a historical measurement, not a new
+benchmark run or a general WebGPU speed claim.
 
-The browser model was the start, not the end. The same verify-first habit
-carried into a Mac-first LLM factory built on MLX-Swift: data preparation,
-LoRA post-training and distillation, eval gates, trace capture, packaging, and
-an OpenAI-compatible local server with a KV-cached, bounded multi-turn agent
-runtime.
+## What local post-training taught me
 
-Its strongest measured result: a 4B model distilled on one Mac from ~99
-frontier rollouts scored 100% on a frontier-validated multi-turn tool-calling
-gate, matching DeepSeek-V4-pro, against 83% for Gemma-4-12b-qat and 75% for
-the stock 4B. The full method and head-to-head table live in the repo's
-[frontier-parity write-up](https://github.com/PostTrainLLM/posttrainllm/blob/main/docs/learn/tool-calling-frontier-parity.md).
+The same verification approach carried into a Mac-first MLX-Swift project for
+data preparation, LoRA post-training, evaluation, packaging, and an
+OpenAI-compatible local server.
+
+One recorded experiment distilled Qwen3-4B-2507 from about 99 frontier
+trajectories. It completed **12 of 12 tasks on a GorillaFileSystem multi-turn
+hard gate**, matching the DeepSeek-V4-pro anchor on that gate. The stock 4B
+with a planning prompt scored 75%, and zero-shot Gemma-4-12b-qat scored 83%.
+This compared a domain-specialized model with general models. It was not a
+claim of general frontier parity.
+
+The same record reports 95% on a 40-task held-out set and a single-turn BFCL
+average that fell from about 87 to 83. Narrow specialization had a cost.
+Generalization to unrelated agent backends was untested in that experiment.
+The [immutable frontier-parity report, sections 8.1 and 8.2](https://github.com/PostTrainLLM/posttrainllm/blob/a7f3a54dd9310dcd70d208763c4332ab4917623d/docs/learn/tool-calling-frontier-parity.md)
+contains the recipe, comparison and caveats. These are recorded project
+results, not promises about another product's shipped model.
+
+## Explore the work
+
+Start with the [PostTrainLLM learning paths](https://posttrainllm.com/learn)
+for the staged build, or inspect the [experiment archive](https://posttrainllm.com/experiments)
+for successful, rejected and inconclusive results. The [recipes](https://posttrainllm.com/recipes)
+connect questions to reproduction steps and retained evidence.
+
+The original browser model is deliberately small. It is an implementation and
+learning exercise, not a model for coherent general-purpose prose. The useful
+result for me was learning to separate an implementation check, a measured
+result, and a claim the evidence can actually support.

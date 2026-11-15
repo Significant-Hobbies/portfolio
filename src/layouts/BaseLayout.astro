@@ -28,6 +28,7 @@ const appHealthProjectId = import.meta.env.PUBLIC_APP_HEALTH_PROJECT_ID;
 <html lang="en">
   <head>
     <Head title={title} description={description} image={image} type={type} />
+    <slot name="head" />
     <script is:inline>
       (() => {
         const storageKey = 'sarthak-theme';
