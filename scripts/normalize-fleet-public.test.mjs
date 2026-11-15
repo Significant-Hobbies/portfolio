@@ -129,3 +129,48 @@ test('schema6 preserves a shareable past directory entry and rejects conflicting
   input.directory[3].shareable = undefined;
   assert.throws(() => normalizePublicCatalog(input));
 });
+
+test('schema6 treats an explicitly unknown optional priority as absence without changing publication', () => {
+  const input = fixture();
+  input.products[0].priority = null;
+  input.directory[0].priority = null;
+  input.pastProjects[0].priority = null;
+  const original = structuredClone(input);
+  const output = normalizePublicCatalog(input);
+  assert.deepEqual(
+    output.directory.map((project) => project.id),
+    ['active', 'past']
+  );
+  for (const project of [
+    ...output.products,
+    ...output.pastProjects,
+    ...output.directory,
+  ]) {
+    assert.equal(Object.hasOwn(project, 'priority'), false);
+  }
+  assert.equal(JSON.stringify(output).includes('must-not-publish'), false);
+  assert.deepEqual(input, original);
+});
+
+test('schema6 still rejects non-null invalid priority types in every selected group', () => {
+  for (const group of ['products', 'pastProjects', 'directory']) {
+    for (const value of [0, false, [], { internal: 'must-not-publish' }]) {
+      const input = fixture();
+      input[group][0].priority = value;
+      assert.throws(() => normalizePublicCatalog(input));
+    }
+  }
+});
+
+test('schema6 does not omit null required fields or invalid list fields', () => {
+  for (const [key, value] of [
+    ['name', null],
+    ['shareable', null],
+    ['domains', null],
+    ['platforms', { internal: 'must-not-publish' }],
+  ]) {
+    const input = fixture();
+    input.directory[0][key] = value;
+    assert.throws(() => normalizePublicCatalog(input));
+  }
+});

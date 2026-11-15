@@ -39,7 +39,11 @@ function publicProject(project) {
   if (project?.shareable !== true) throw new Error('Invalid public project');
   const result = Object.fromEntries(
     publicFields
-      .filter((key) => Object.hasOwn(project, key))
+      .filter(
+        (key) =>
+          Object.hasOwn(project, key) &&
+          (key !== 'priority' || project[key] !== null)
+      )
       .map((key) => [key, project[key]])
   );
   for (const [key, value] of Object.entries(result)) {
